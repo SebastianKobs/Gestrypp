@@ -1,7 +1,10 @@
+    html, body {
+        height: 100%;
+    }
     body {
         margin: 0;
         padding: 0;
-        overflow: hidden;
+        
         background-color: #efefef;
         font-family: sans-serif;
     }
@@ -9,7 +12,7 @@
     #container {
         position: relative;
         width: 100vw;
-        height: 95vh;
+        height: 95%;
     }
 
     #canvas {
@@ -75,11 +78,25 @@
     }
 
     #controls form {
-        width: 500px;
+        width: 100%;
         /* increased width to accommodate columns */
         display: grid;
         grid-template-columns: 1fr 1fr;
+        row-gap: 20px;
+    }
 
+    @media (max-width: 600px) {
+        #controls {
+            left: 1vw;
+            top: 16vh;
+            width: 80vw;
+            height: auto;
+        }
+        #controls form {
+            /* increased width to accommodate columns */
+            display: grid;
+            grid-template-columns: 1fr;
+        }
     }
 
     .control-group {
