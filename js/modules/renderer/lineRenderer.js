@@ -65,19 +65,18 @@ class LineRenderer {
             //
             const peak = branch.peak().addVector3(branch.location);
             //
-            this.ctx.globalAlpha = this._getAlpha(peak.x,peak.y, branch.depth);
+            this.ctx.globalAlpha = this._getAlpha(peak, branch.depth);
             this.ctx.stroke();
             //
             if (Math.random() < this.petalPropability && branch.depth > 0) {
-                const petalPosition = branch.peak().addVector3(branch.location);
-                this._drawPetal(petalPosition.x, petalPosition.y, this.petalRadius);
+                this._drawPetal(peak, this.petalRadius);
             }
         }
     }
     //
-    _drawPetal(x, y, radius) {
+    _drawPetal(position, radius) {
         this.ctx.beginPath();
-        this.ctx.arc(x, y, radius, 0, 2 * Math.PI);
+        this.ctx.arc(position.x, position.y, radius, 0, 2 * Math.PI);
         //
         this.ctx.lineWidth = 1;
         this.ctx.strokeStyle = this.strokeStylePetal;
@@ -86,10 +85,12 @@ class LineRenderer {
         this.ctx.stroke();
     }
     //
-    //
-    _getAlpha(x, y, depth) {
+    _getAlpha(position, depth) {
         let alphaY = 1;
         let alphaX = 1;
+        //
+        const x = position.x;
+        const y = position.y;
         //
         if (y < this.marginY) {
             alphaY = Math.max(0, y) / this.marginY;
@@ -99,7 +100,7 @@ class LineRenderer {
         }
         if (x < this.marginX) {
             alphaX = Math.max(0, x) / this.marginX;
-        } else if (x > this.ctx.canvas.width - this.marginX && depth > 0) {
+        } else if (x > this.ctx.canvas.width - this.marginX) {
             const right = Math.min(x, this.ctx.canvas.width);
             alphaX = (this.ctx.canvas.width - right) / this.marginX;
         }
