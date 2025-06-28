@@ -1,10 +1,42 @@
 'use strict';
 
-export { LSystem };
+import { Vector3 } from '../math/vector3.js';
+
+export { LSystem, Branch };
+
+class Branch {
+    location = new Vector3();
+    vertices =  [];
+    depth = 0;
+    constructor(x, y, depth) {
+        this.location.set(x, y, 0);
+        this.depth = depth;
+    }
+    //
+    addVertex(x, y,) {
+        this.vertices.push(new Vector3(x, y, 0));
+    }
+    //
+    length() {
+        return this.vertices.length;
+    }
+    peak() {
+        if (this.length() > 0) {
+            return this.vertices[this.length() - 1];
+        }
+        //
+        return new Vector3(0, 0, 0);
+    }
+
+}
+
 
 class Turtle {
-    x = 0;
-    y = 0;
+    branchX = 0;
+    branchY = 0;
+    //
+    currentX = 0;
+    currentY = 0;
     angle = 270;
     stack = [];
     branches = [];
@@ -22,21 +54,17 @@ class Turtle {
         }
         //
         const rad = (this.angle * Math.PI) / 180;
-        const newX = this.x + length * Math.cos(rad);
-        const newY = this.y + length * Math.sin(rad);
         //
-        this.branches[this.currentBranch].push({
-            x: this.x,
-            y: this.y,
-            newX: newX,
-            newY: newY,
-            length: length,
-            rad: rad,
-            depth: this.stack.length,
-        });
+        const xOffset =length * Math.cos(rad);
+        const yOffset = length * Math.sin(rad);
         //
-        this.x = newX;
-        this.y = newY;
+        this.currentX += xOffset
+        this.currentY += yOffset;
+        //
+        this.branchX += xOffset;
+        this.branchY += yOffset;
+        //
+        this.branches[this.currentBranch].addVertex(this.branchX, this.branchY);
     }
     //
     turnLeft(angle) {
@@ -48,7 +76,7 @@ class Turtle {
     }
     //
     push() {
-        this.stack.push({ x: this.x, y: this.y, angle: this.angle });
+        this.stack.push({ x: this.currentX, y: this.currentY, angle: this.angle });
         //
         this._newBranch();
     }
@@ -56,28 +84,37 @@ class Turtle {
     pop() {
         const state = this.stack.pop();
         //
-        this._newBranch();
-        //
         if (state) {
-            this.x = state.x;
-            this.y = state.y;
+            this.currentX = state.x;
+            this.currentY = state.y;
             this.angle = state.angle;
         }
+        //
+        this._newBranch();
     }
     //
     reset() {
-        this.x = document.getElementById('container').clientWidth / 2;
-        this.y = document.getElementById('container').clientHeight;
+        this.currentX = document.getElementById('container').clientWidth / 2;
+        this.currentY = document.getElementById('container').clientHeight;
         this.angle = 270;
-        this.branches = [[]];
+        this.branches = [
+            new Branch(this.currentX, this.currentY, 0)
+        ];
         this.currentBranch = 0;
     }
     //
     _newBranch() {
-        if (this.branches[this.currentBranch].length) {
             this.currentBranch++;
-            this.branches[this.currentBranch] = [];
-        }
+            //
+            this.branchX = 0;
+            this.branchY = 0;
+            //
+            this.branches[this.currentBranch] = new Branch(
+                this.currentX, 
+                this.currentY, 
+                this.stack.length
+            );
+        
     }
 }
 //

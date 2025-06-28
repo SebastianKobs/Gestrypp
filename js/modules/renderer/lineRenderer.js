@@ -1,12 +1,13 @@
 'use strict';
 
 export { LineRenderer };
+//
 import { Color } from '../utils/color.js';
-
+//
 class LineRenderer {
     strokeStyleBranch = new Color(32, 100, 40, 0.2);
     strokeStyleStem = new Color(61, 46, 43, 0.5);
-    strokeStyleStem2 = new Color(61, 46, 43, 0.4);
+    strokeStyleStem2 = new Color(61, 46, 43, 0.3);
     strokeStylePetal = new Color(128, 0, 70, 0.6);
     currentBranchColor = this.strokeStyleBranch;
     //
@@ -37,36 +38,35 @@ class LineRenderer {
             strokeStyle = this.currentBranchColor;
             lineWidth = 1;
             //
-            if (branch.length === 0) {
-                continue;
-            }
-            //
-            if (branch[0].depth === 0) {
+            if (branch.depth === 0) {
                 lineWidth = 10;
                 strokeStyle = this.strokeStyleStem;
-            } else if (branch[0].depth === 1) {
+            } else if (branch.depth === 1) {
                 lineWidth = 3;
                 strokeStyle = this.strokeStyleStem2;
-            } else if  (branch[0].depth > 4) {
+            } else if  (branch.depth > 4) {
                 strokeStyle = new Color(
-                    Math.max(0, 255 - branch[0].depth * 40),
+                    Math.max(0, 255 - branch.depth * 40),
                     this.strokeStyleBranch.g,
-                    Math.max(0, this.strokeStyleBranch.b - branch[0].depth * 10),
+                    Math.max(0, this.strokeStyleBranch.b - branch.depth * 10),
                     0.3
                 );
             }
             //
-            for (const point of branch) {
-                this.ctx.moveTo(point.x, point.y);
-                this.ctx.lineTo(point.newX, point.newY);
+            this.ctx.moveTo(branch.location.x, branch.location.y);
+            //
+            for (const vertex of branch.vertices) {
+                const p = vertex.add(branch.location);
+                this.ctx.lineTo(p.x, p.y);
                 this.ctx.strokeStyle = strokeStyle.toString();
-                this.ctx.globalAlpha = this._getAlpha(point.newX, point.newY, point.depth);
+                this.ctx.globalAlpha = this._getAlpha(p.x,p.y, branch.depth);
                 this.ctx.lineWidth = lineWidth;
             }
+            //
             this.ctx.stroke();
             //
-            if (Math.random() < this.petalPropability && branch.length > 0) {
-                const petalPosition = branch[branch.length - 1];
+            if (Math.random() < this.petalPropability && branch.depth > 0) {
+                const petalPosition = branch.peak();
                 this._drawPetal(petalPosition.x, petalPosition.y, this.petalRadius);
             }
         }
