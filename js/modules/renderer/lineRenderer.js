@@ -35,10 +35,10 @@ class LineRenderer {
         //
         for (const branch of branches) {
             this.ctx.beginPath();
+            //
             strokeStyle = this.currentBranchColor;
             lineWidth = 1;
             //
-            this.ctx.globalAlpha = 1;
             if (branch.depth === 0) {
                 lineWidth = 10;
                 strokeStyle = this.strokeStyleStem;
@@ -55,19 +55,21 @@ class LineRenderer {
             }
             //
             this.ctx.moveTo(branch.location.x, branch.location.y);
+            this.ctx.lineWidth = lineWidth;
+            this.ctx.strokeStyle = strokeStyle.toString();
             //
             for (const vertex of branch.vertices) {
-                const p = vertex.add(branch.location);
+                const p = vertex.addVector3(branch.location);
                 this.ctx.lineTo(p.x, p.y);
-                this.ctx.strokeStyle = strokeStyle.toString();
-                this.ctx.globalAlpha = this._getAlpha(p.x,p.y, branch.depth);
-                this.ctx.lineWidth = lineWidth;
             }
             //
+            const peak = branch.peak().addVector3(branch.location);
+            //
+            this.ctx.globalAlpha = this._getAlpha(peak.x,peak.y, branch.depth);
             this.ctx.stroke();
             //
             if (Math.random() < this.petalPropability && branch.depth > 0) {
-                const petalPosition = branch.peak();
+                const petalPosition = branch.peak().addVector3(branch.location);
                 this._drawPetal(petalPosition.x, petalPosition.y, this.petalRadius);
             }
         }

@@ -25,6 +25,14 @@ class Vector3 {
         return this;
     }
     //
+    addVector3(v) {
+        return new Vector3(
+            this.x + v.x,
+            this.y + v.y,
+            this.z + v.z
+        );
+    }
+    //
     subtract(v) {
         this.x -= v.x;
         this.y -= v.y;
