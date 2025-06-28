@@ -6,7 +6,6 @@ import { LSystem } from './modules/lindenmayer/lsystem.js';
 import { LineRenderer } from './modules/renderer/lineRenderer.js';
 //
 (function () {
-
     const init = function () {
         const canvas = document.getElementById('stage');
         //
@@ -46,19 +45,21 @@ import { LineRenderer } from './modules/renderer/lineRenderer.js';
         document.querySelectorAll('.control').forEach((el) => {
             el.addEventListener('change', (e) => {
                 const value = e.target.value;
+                const min = e.target.min;
+                const max = e.target.max;
                 //
                 switch (e.target.id) {
                     case 'iterations':
-                        sl.iterations = Helper.ensureNumberFormat(value, sl.iterations);
+                        sl.iterations = Helper.clamp( Helper.ensureNumberFormat(value, sl.iterations),min, max,);
                         break;
                     case 'length':
-                        sl.length = Helper.ensureNumberFormat(value, sl.length);
+                        sl.length = Helper.clamp( Helper.ensureNumberFormat(value, sl.length), min, max);
                         break;
                     case 'angle':
-                        sl.angle = Helper.ensureNumberFormat(value, sl);
+                        sl.angle = Helper.clamp(Helper.ensureNumberFormat(value, sl), min, max);
                         break;
                     case 'petalProbability':
-                        renderer.petalPropability = Helper.ensureNumberFormat(value, renderer.petalPropability);
+                        renderer.petalPropability = Helper.clamp(Helper.ensureNumberFormat(value, renderer.petalPropability), min, max);
                         break;
                     case 'stemColor':
                         renderer.strokeStyleStem = Helper.hexToColor(value, 0.5);

@@ -11,6 +11,14 @@ class Helper {
     static ensureNumberFormat(value, defaultValue = 0) {
         return value.replace(/[^\d.,-]/g, '').replace(/,/g, '.') || defaultValue;
     }
+    static clamp(value, min, max) {
+        if (isNaN(min) || isNaN(max)) {
+            console.warn('Invalid min or max value. check input element for min and max');
+            return value;
+        }
+        //
+        return Math.max(min, Math.min(max, value));
+    }
     //
     static save(canvas) {
         canvas.toBlob(
