@@ -9,17 +9,12 @@ import { LineRenderer } from './modules/renderer/lineRenderer.js';
     const init = function () {
         const canvas = document.getElementById('stage');
         //
-        canvas.width = document.getElementById('container').clientWidth;
-        canvas.height = document.getElementById('container').clientHeight;
-        //
         const rules = {
             F: 'FF+[+F-F-F]-[-F+F+FF]',
             X: 'F+F+F+[-X][-X]X',
         };
         //
         const axiom = 'X';
-        //
-        const branchHeight = document.getElementById('length').value;
         //
         renderer = new LineRenderer(canvas);
         //
@@ -28,8 +23,8 @@ import { LineRenderer } from './modules/renderer/lineRenderer.js';
             axiom,
             rules,
             document.getElementById('iterations').value,
-            branchHeight,
-            document.getElementById('angle').value
+            9,
+            10
         );
         //
         document.getElementById('reset').addEventListener('click', () => {
@@ -99,6 +94,7 @@ import { LineRenderer } from './modules/renderer/lineRenderer.js';
                 if (!modifier) {
                     return;
                 }
+                //
                 switch (e.key) {
                     case 'g': //
                         e.preventDefault();
@@ -113,14 +109,13 @@ import { LineRenderer } from './modules/renderer/lineRenderer.js';
                         Helper.save(canvas);
                         break;
                 }
-                if ((window.navigator.platform.match('Mac') ? e.metaKey : e.ctrlKey) && e.keyCode == 83) {
-                    e.preventDefault();
-                    Helper.save(canvas);
-                }
             },
             false
         );
         //
+        document.getElementById('petalProbability').value = renderer.petalPropability;
+        document.getElementById('iterations').value = sl.iterations;
+        document.getElementById('length').value = sl.length;
         document.getElementById('stemColor').value = renderer.strokeStyleStem.toHexString();
         document.getElementById('stemColor2').value = renderer.strokeStyleStem2.toHexString();
         document.getElementById('branchColor').value = renderer.strokeStyleBranch.toHexString();

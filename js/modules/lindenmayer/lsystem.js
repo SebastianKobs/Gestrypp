@@ -6,14 +6,15 @@ export { LSystem, Branch };
 
 class Branch {
     location = new Vector3();
-    vertices =  [];
+    vertices = [];
     depth = 0;
+    //
     constructor(x, y, depth) {
         this.location.set(x, y, 0);
         this.depth = depth;
     }
     //
-    addVertex(x, y,) {
+    addVertex(x, y) {
         this.vertices.push(new Vector3(x, y, 0));
     }
     //
@@ -27,9 +28,7 @@ class Branch {
         //
         return new Vector3(0, 0, 0);
     }
-
 }
-
 
 class Turtle {
     branchX = 0;
@@ -37,7 +36,9 @@ class Turtle {
     //
     currentX = 0;
     currentY = 0;
+    //
     angle = 270;
+    //
     stack = [];
     branches = [];
     currentBranch = 0;
@@ -55,10 +56,10 @@ class Turtle {
         //
         const rad = (this.angle * Math.PI) / 180;
         //
-        const xOffset =length * Math.cos(rad);
+        const xOffset = length * Math.cos(rad);
         const yOffset = length * Math.sin(rad);
         //
-        this.currentX += xOffset
+        this.currentX += xOffset;
         this.currentY += yOffset;
         //
         this.branchX += xOffset;
@@ -97,24 +98,17 @@ class Turtle {
         this.currentX = document.getElementById('container').clientWidth / 2;
         this.currentY = document.getElementById('container').clientHeight;
         this.angle = 270;
-        this.branches = [
-            new Branch(this.currentX, this.currentY, 0)
-        ];
+        this.branches = [new Branch(this.currentX, this.currentY, 0)];
         this.currentBranch = 0;
     }
     //
     _newBranch() {
-            this.currentBranch++;
-            //
-            this.branchX = 0;
-            this.branchY = 0;
-            //
-            this.branches[this.currentBranch] = new Branch(
-                this.currentX, 
-                this.currentY, 
-                this.stack.length
-            );
-        
+        this.currentBranch++;
+        //
+        this.branchX = 0;
+        this.branchY = 0;
+        //
+        this.branches[this.currentBranch] = new Branch(this.currentX, this.currentY, this.stack.length);
     }
 }
 //

@@ -26,11 +26,7 @@ class Vector3 {
     }
     //
     addVector3(v) {
-        return new Vector3(
-            this.x + v.x,
-            this.y + v.y,
-            this.z + v.z
-        );
+        return new Vector3(this.x + v.x, this.y + v.y, this.z + v.z);
     }
     //
     subtract(v) {
@@ -41,6 +37,11 @@ class Vector3 {
         return this;
     }
     //
+    subtractVector3(v) {
+        return new Vector3(this.x - v.x, this.y - v.y, this.z - v.z);
+        //
+    }
+    //
     multiply(v) {
         this.x *= v.x;
         this.y *= v.y;
@@ -48,17 +49,16 @@ class Vector3 {
         //
         return this;
     }
+    multiplyVector3(v) {
+        return new Vector3(this.x * v.x, this.y * v.y, this.z * v.z);
+    }
     //
     dot(v) {
         return this.x * v.x + this.y * v.y + this.z * v.z;
     }
     //
     cross(v) {
-        return new Vector3(
-            this.y * v.z - this.z * v.y,
-            this.z * v.x - this.x * v.z,
-            this.x * v.y - this.y * v.x
-        );
+        return new Vector3(this.y * v.z - this.z * v.y, this.z * v.x - this.x * v.z, this.x * v.y - this.y * v.x);
     }
     //
     multiplyScalar(scalar) {
@@ -67,18 +67,18 @@ class Vector3 {
         this.z *= scalar;
         //
         return this;
-    } 
+    }
     //
-    divideScalar( scalar ) {
-		return this.multiplyScalar( 1 / scalar );
-	}
+    divideScalar(scalar) {
+        return this.multiplyScalar(1 / scalar);
+    }
     //
     length() {
-		return Math.sqrt( this.x * this.x + this.y * this.y + this.z * this.z );
-	}
+        return Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
+    }
     //
     normalize() {
-		return this.divideScalar( this.length() || 1 );
+        return this.divideScalar(this.length() || 1);
     }
     //
     clone() {
@@ -88,5 +88,4 @@ class Vector3 {
     toString() {
         return `Vector3(${this.x}, ${this.y}, ${this.z})`;
     }
-
 }

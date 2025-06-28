@@ -20,6 +20,7 @@ class Color {
             const hex = value.toString(16);
             return hex.length === 1 ? '0' + hex : hex;
         };
+        //
         return `#${toHex(this.r)}${toHex(this.g)}${toHex(this.b)}`;
     }
     toString() {

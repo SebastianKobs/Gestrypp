@@ -5,13 +5,13 @@ export { LineRenderer };
 import { Color } from '../utils/color.js';
 //
 class LineRenderer {
-    strokeStyleBranch = new Color(32, 100, 40, 0.2);
     strokeStyleStem = new Color(61, 46, 43, 0.5);
-    strokeStyleStem2 = new Color(61, 46, 43, 0.3);
-    strokeStylePetal = new Color(128, 0, 70, 0.6);
+    strokeStyleStem2 = new Color(79, 77, 57, 0.3);
+    strokeStyleBranch = new Color(46, 86, 51, 0.2);
+    strokeStylePetal = new Color(235, 235, 235, 0.6);
     currentBranchColor = this.strokeStyleBranch;
     //
-    petalPropability = 0.0006;
+    petalPropability = 0.004;
     petalRadius = 5;
     //
     marginY = 200;
