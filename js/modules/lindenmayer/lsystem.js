@@ -15,7 +15,7 @@ class Turtle {
     //
     step(length) {
         if (this.stack.length === 0) {
-            length *= 0.1;
+            length *= 0.5;
         } else if (this.stack.length === 1) {
             length *= 0.7;
         }
