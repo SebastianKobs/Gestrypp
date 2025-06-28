@@ -4,7 +4,6 @@
     body {
         margin: 0;
         padding: 0;
-        
         background-color: #efefef;
         font-family: sans-serif;
     }
@@ -79,7 +78,6 @@
 
     #controls form {
         width: 100%;
-        /* increased width to accommodate columns */
         display: grid;
         grid-template-columns: 1fr 1fr;
         row-gap: 20px;
@@ -93,7 +91,6 @@
             height: auto;
         }
         #controls form {
-            /* increased width to accommodate columns */
             display: grid;
             grid-template-columns: 1fr;
         }

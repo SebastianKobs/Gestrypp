@@ -22,9 +22,10 @@ class Color {
         return `rgba(${this.r}, ${this.g}, ${this.b}, ${this.a})`;
     }
 }
+//
 class Helper {
     static hexToColor(hex, alpha = 1) {
-        const [r, g, b] = hex.match(/\w\w/g).map(x => parseInt(x, 16));
+        const [r, g, b] = hex.match(/\w\w/g).map((x) => parseInt(x, 16));
         return new Color(r, g, b, alpha);
     }
     //
@@ -46,7 +47,8 @@ class Helper {
             0.8
         );
     }
-};
+}
+//
 class Draggable {
     targetElement = null;
     //
@@ -57,7 +59,7 @@ class Draggable {
     }
     //
     startDrag(event) {
-        console.log('startDrag', event)
+        console.log('startDrag', event);
         if (event.target !== this.targetElement && !event.target.matches('label, p, strong')) {
             return;
         }
@@ -71,10 +73,10 @@ class Draggable {
         //
         const moveHandler = (moveEvent) => {
             moveEvent.preventDefault();
-            element.style.left = (moveEvent.clientX - offsetX) + 'px';
-            element.style.top = (moveEvent.clientY - offsetY) + 'px';
+            element.style.left = moveEvent.clientX - offsetX + 'px';
+            element.style.top = moveEvent.clientY - offsetY + 'px';
         };
-
+        //
         const upHandler = () => {
             document.removeEventListener('mousemove', moveHandler);
             document.removeEventListener('mouseup', upHandler);
@@ -87,7 +89,7 @@ class Draggable {
         document.addEventListener('touchmove', moveHandler);
         document.addEventListener('touchend', upHandler);
     }
-};
+}
 //
 class Turtle {
     ctx = null;
@@ -103,15 +105,16 @@ class Turtle {
     petalRadius = 5;
     currentBranchColor = this.strokeStyleBranch;
     branches = [];
-    currentBranc = 0;
+    currentBranch = 0;
     marginY = 200;
     marginX = 100;
+    //
     constructor(canvas) {
-        const offscreen = canvas.transferControlToOffscreen()
+        const offscreen = canvas.transferControlToOffscreen();
         this.ctx = offscreen.getContext('2d');
         //
         this.clear();
-        return this
+        return this;
     }
     //
     step(length) {
@@ -119,16 +122,16 @@ class Turtle {
         let strokeStyle = this.currentBranchColor;
         //
         if (this.stack.length === 0) {
-            lineWidth = 10
+            lineWidth = 10;
             length *= 0.5;
-            strokeStyle = this.strokeStyleStem
+            strokeStyle = this.strokeStyleStem;
         } else if (this.stack.length === 1) {
             lineWidth = 3;
             length *= 0.7;
             strokeStyle = this.strokeStyleStem2;
         }
         //
-        const rad = this.angle * Math.PI / 180;
+        const rad = (this.angle * Math.PI) / 180;
         const newX = this.x + length * Math.cos(rad);
         const newY = this.y + length * Math.sin(rad);
         //
@@ -144,7 +147,7 @@ class Turtle {
             length: length,
             lineWidth: lineWidth,
             strokeStyle: strokeStyle,
-            alpha: this._getAlpha(newX, newY)
+            alpha: this._getAlpha(newX, newY),
         });
         //
         this.x = newX;
@@ -165,7 +168,12 @@ class Turtle {
         this._newBranch();
         //
         if (this.stack.length > 4) {
-            this.currentBranchColor = new Color(Math.max(0, 255 - this.stack.length * 40), this.strokeStyleBranch.g, Math.max(0, this.strokeStyleBranch.b - this.stack.length * 10), 0.3);
+            this.currentBranchColor = new Color(
+                Math.max(0, 255 - this.stack.length * 40),
+                this.strokeStyleBranch.g,
+                Math.max(0, this.strokeStyleBranch.b - this.stack.length * 10),
+                0.3
+            );
         }
     }
     //
@@ -186,7 +194,6 @@ class Turtle {
     }
     //
     displayBranches() {
-        let height = 0;
         for (const branch of this.branches) {
             this.ctx.beginPath();
             for (const point of branch) {
@@ -195,7 +202,7 @@ class Turtle {
 
                 this.ctx.strokeStyle = point.strokeStyle.toString();
                 this.ctx.globalAlpha = point.alpha;
-                this.ctx.lineWidth = point.lineWidth
+                this.ctx.lineWidth = point.lineWidth;
             }
             this.ctx.stroke();
             if (Math.random() < this.petalPropability && branch.length > 0) {
@@ -204,6 +211,7 @@ class Turtle {
             }
         }
     }
+    //
     drawPetal(x, y, radius) {
         this.ctx.beginPath();
         this.ctx.arc(x, y, radius, 0, 2 * Math.PI);
@@ -221,9 +229,7 @@ class Turtle {
         this.x = this.ctx.canvas.width / 2;
         this.y = this.ctx.canvas.height;
         this.angle = 270;
-        this.branches = [
-            []
-        ];
+        this.branches = [[]];
         this.currentBranch = 0;
         this.currentBranchColor = this.strokeStyleBranch;
         //
@@ -329,7 +335,7 @@ class LSystem {
         return Math.floor(Math.random() * this.angle);
     }
 }
-//   
+//
 const init = function () {
     const canvas = document.getElementById('stage');
     //
@@ -337,16 +343,22 @@ const init = function () {
     canvas.height = document.getElementById('container').clientHeight;
     //
     const rules = {
-        'F': 'FF+[+F-F-F]-[-F+F+FF]',
-        'X': 'F+F+F+[-X][-X]X'
+        F: 'FF+[+F-F-F]-[-F+F+FF]',
+        X: 'F+F+F+[-X][-X]X',
     };
     //
     const axiom = 'X';
     //
-    const iterations = 6;
     const branchHeight = document.getElementById('length').value;
     //
-    sl = new LSystem(canvas, axiom, rules, document.getElementById('iterations').value, branchHeight, document.getElementById('angle').value);
+    sl = new LSystem(
+        canvas,
+        axiom,
+        rules,
+        document.getElementById('iterations').value,
+        branchHeight,
+        document.getElementById('angle').value
+    );
     //
     document.getElementById('reset').addEventListener('click', () => {
         sl.render();
@@ -356,11 +368,12 @@ const init = function () {
         Helper.save(canvas);
     });
     //
-    const draggableControls = new Draggable(document.getElementById('controls'));
+    const draggableControls = new Draggable(document.getElementById('controls')); //eslint-disable-line
     //
     document.querySelectorAll('.control').forEach((el) => {
         el.addEventListener('change', (e) => {
             const value = e.target.value;
+            //
             switch (e.target.id) {
                 case 'iterations':
                     sl.iterations = value;
@@ -388,6 +401,7 @@ const init = function () {
                     sl.turtle.strokeStylePetal = Helper.hexToColor(value, 0.6);
                     break;
             }
+            //
             sl.generateSentence();
             sl.render();
         });
@@ -395,6 +409,7 @@ const init = function () {
     //
     document.getElementById('toggle').addEventListener('click', () => {
         const controls = document.getElementById('controls');
+        //
         controls.classList.toggle('hidden');
         //
         if (controls.classList.contains('hidden')) {
@@ -403,39 +418,48 @@ const init = function () {
             document.getElementById('toggle').textContent = 'Hide Controls';
         }
     });
-    document.addEventListener("keydown", function (e) {
-        const modifier = window.navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey;
-        if (!modifier) {
-            return;
-        }
-        switch (e.key) {
-            case 'g': // 
-                e.preventDefault();
-                sl.render();
-                break;
-            case 'c': // C
-                e.preventDefault();
-                document.getElementById('toggle').click();
-                break;
-            case 's': // S
+    //
+    document.addEventListener(
+        'keydown',
+        function (e) {
+            const modifier = window.navigator.platform.match('Mac') ? e.metaKey : e.ctrlKey;
+            if (!modifier) {
+                return;
+            }
+            switch (e.key) {
+                case 'g': //
+                    e.preventDefault();
+                    sl.render();
+                    break;
+                case 'c': // C
+                    e.preventDefault();
+                    document.getElementById('toggle').click();
+                    break;
+                case 's': // S
+                    e.preventDefault();
+                    Helper.save(canvas);
+                    break;
+            }
+            if ((window.navigator.platform.match('Mac') ? e.metaKey : e.ctrlKey) && e.keyCode == 83) {
                 e.preventDefault();
                 Helper.save(canvas);
-                break;
-        }
-        if ((window.navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey) && e.keyCode == 83) {
-            e.preventDefault();
-            Helper.save(canvas);
-        }
-    }, false);
+            }
+        },
+        false
+    );
+    //
     document.getElementById('stemColor').value = sl.turtle.strokeStyleStem.toHexString();
     document.getElementById('stemColor2').value = sl.turtle.strokeStyleStem2.toHexString();
-    document.getElementById('branchColor').value = sl.turtle.strokeStyleBranch.toHexString()
+    document.getElementById('branchColor').value = sl.turtle.strokeStyleBranch.toHexString();
     document.getElementById('petalColor').value = sl.turtle.strokeStylePetal.toHexString();
     //
-    sl.render()
+    sl.render();
 };
 //
-let sl = null
+let sl = null;
 //
 window.addEventListener('load', init);
-window.addEventListener('resize', () => { sl.render() });
+//
+window.addEventListener('resize', () => {
+    sl.render();
+});
