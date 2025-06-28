@@ -38,6 +38,7 @@ class LineRenderer {
             strokeStyle = this.currentBranchColor;
             lineWidth = 1;
             //
+            this.ctx.globalAlpha = 1;
             if (branch.depth === 0) {
                 lineWidth = 10;
                 strokeStyle = this.strokeStyleStem;
