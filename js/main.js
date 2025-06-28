@@ -1,9 +1,12 @@
+'use strict';
+
 import { Draggable } from './modules/utils/draggable.js';
 import { Helper } from './modules/utils/helper.js';
 import { LSystem } from './modules/lindenmayer/lsystem.js';
 import { LineRenderer } from './modules/renderer/lineRenderer.js';
 //
 (function () {
+
     const init = function () {
         const canvas = document.getElementById('stage');
         //
@@ -46,16 +49,16 @@ import { LineRenderer } from './modules/renderer/lineRenderer.js';
                 //
                 switch (e.target.id) {
                     case 'iterations':
-                        sl.iterations = value;
+                        sl.iterations = Helper.ensureNumberFormat(value, sl.iterations);
                         break;
                     case 'length':
-                        sl.length = value;
+                        sl.length = Helper.ensureNumberFormat(value, sl.length);
                         break;
                     case 'angle':
-                        sl.angle = value;
+                        sl.angle = Helper.ensureNumberFormat(value, sl);
                         break;
                     case 'petalProbability':
-                        renderer.petalPropability = value;
+                        renderer.petalPropability = Helper.ensureNumberFormat(value, renderer.petalPropability);
                         break;
                     case 'stemColor':
                         renderer.strokeStyleStem = Helper.hexToColor(value, 0.5);

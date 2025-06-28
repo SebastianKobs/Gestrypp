@@ -1,3 +1,5 @@
+'use strict';
+
 export { LineRenderer };
 import { Color } from '../utils/color.js';
 

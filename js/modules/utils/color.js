@@ -1,3 +1,5 @@
+'use strict';
+
 export { Color };
 
 class Color {

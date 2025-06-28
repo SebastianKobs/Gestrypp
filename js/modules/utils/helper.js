@@ -1,3 +1,5 @@
+'use strict';
+
 export { Helper };
 import { Color } from './color.js';
 
@@ -5,6 +7,9 @@ class Helper {
     static hexToColor(hex, alpha = 1) {
         const [r, g, b] = hex.match(/\w\w/g).map((x) => parseInt(x, 16));
         return new Color(r, g, b, alpha);
+    }
+    static ensureNumberFormat(value, defaultValue = 0) {
+        return value.replace(/[^\d.,-]/g, '').replace(/,/g, '.') || defaultValue;
     }
     //
     static save(canvas) {
