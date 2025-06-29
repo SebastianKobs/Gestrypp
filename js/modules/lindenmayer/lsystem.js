@@ -85,7 +85,6 @@ class Turtle {
     }
 
     gestrypp() {
-        console.log('t:', this.minY, 'b:', this.maxY, 'l:', this.minX, 'r:', this.maxX);
         return new Gestrypp(this.branches, {
             t: this.minY,
             l: this.minX,
@@ -165,10 +164,10 @@ class Turtle {
     }
     //
     _newBranch() {
-        this.currentBranch++;
-        //
         this.branchX = 0;
         this.branchY = 0;
+        //
+        this.currentBranch++;
         //
         this.branches[this.currentBranch] = new Branch(this.currentX, this.currentY, this.stack.length);
     }
@@ -183,6 +182,7 @@ class LSystem {
     length = 0;
     angle = 25;
     sentence = '';
+    useRandomAngle = true;
     //
     constructor(renderer, axiom, rules, iterations, length, angle) {
         this.turtle = new Turtle();
@@ -219,6 +219,9 @@ class LSystem {
                 case 'F':
                     this.turtle.step(this.length);
                     break;
+                case '?':
+                    Math.random() < 0.5 ? this.turtle.turnLeft(this.randomAngle()) : this.turtle.turnRight(this.randomAngle());
+                    break;
                 case '+':
                     this.turtle.turnRight(this.randomAngle());
                     break;
@@ -241,6 +244,6 @@ class LSystem {
     }
     //
     randomAngle() {
-        return Math.floor(Math.random() * this.angle);
+        return this.useRandomAngle ? Math.floor(Math.random() * this.angle) : this.angle;
     }
 }

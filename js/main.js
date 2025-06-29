@@ -11,7 +11,7 @@ import { LineRenderer } from './modules/renderer/lineRenderer.js';
         //
         const rules = {
             F: 'FF+[+F-F-F]-[-F+F+FF]',
-            X: 'F+F+F+[-X][-X]X',
+            X: 'F?F?F?[-X][-X]X',
         };
         //
         const axiom = 'X';
@@ -104,11 +104,18 @@ import { LineRenderer } from './modules/renderer/lineRenderer.js';
                     case '+':
                          e.preventDefault();
                         renderer.scale += 0.1;
+                        document.getElementById('scale').textContent = renderer.scale.toFixed(1);
                         sl.render();
                         break;
                     case '-': 
                         e.preventDefault();
                         renderer.scale -= 0.1;
+                        document.getElementById('scale').textContent = renderer.scale.toFixed(1);
+                        sl.render();
+                        break;
+                    case 'r':
+                        e.preventDefault();
+                        sl.useRandomAngle = !sl.useRandomAngle;
                         sl.render();
                         break;
                 }
