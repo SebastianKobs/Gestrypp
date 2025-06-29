@@ -11,7 +11,7 @@ import { LineRenderer } from './modules/renderer/lineRenderer.js';
         //
         const rules = {
             F: 'FF+[+F-F-F]-[-F+F+FF]',
-            X: 'F?F?F?[-X][-X]X',
+            X: 'F+F?F-[-X][-X]X',
         };
         //
         const axiom = 'X';
