@@ -9,7 +9,7 @@ class Vector3 {
         this.z = z;
     }
     //
-    set(x, y, z) {
+    set(x, y, z= 0) {
         this.x = x;
         this.y = y;
         this.z = z;

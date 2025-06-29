@@ -14,6 +14,8 @@ class LineRenderer {
     petalPropability = 0.004;
     petalRadius = 5;
     //
+    scale = 1;
+    //
     marginY = 200;
     marginX = 100;
     //
@@ -24,7 +26,8 @@ class LineRenderer {
         this.resizeCanvas();
     }
     //
-    render(branches) {
+  
+    render(gestrypp) {
         let lineWidth = 1;
         let strokeStyle = (this.currentBranchColor = this.strokeStyleBranch);
         //
@@ -33,7 +36,10 @@ class LineRenderer {
         this.ctx.fillStyle = '#cdcdcd';
         this.ctx.fillRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
         //
-        for (const branch of branches) {
+        gestrypp.location.set(this.ctx.canvas.width / 2, this.ctx.canvas.height);
+        gestrypp.scale(this.scale);
+        //
+        for (const branch of gestrypp.branches) {
             this.ctx.beginPath();
             //
             strokeStyle = this.currentBranchColor;
@@ -45,7 +51,7 @@ class LineRenderer {
             } else if (branch.depth === 1) {
                 lineWidth = 3;
                 strokeStyle = this.strokeStyleStem2;
-            } else if  (branch.depth > 4) {
+            } else if (branch.depth > 4) {
                 strokeStyle = new Color(
                     Math.max(0, 255 - branch.depth * 40),
                     this.strokeStyleBranch.g,
@@ -54,16 +60,18 @@ class LineRenderer {
                 );
             }
             //
-            this.ctx.moveTo(branch.location.x, branch.location.y);
+            const start = branch.location.addVector3(gestrypp.location);
+
+            this.ctx.moveTo(start.x, start.y);
             this.ctx.lineWidth = lineWidth;
             this.ctx.strokeStyle = strokeStyle.toString();
             //
             for (const vertex of branch.vertices) {
-                const p = vertex.addVector3(branch.location);
+                const p = vertex.addVector3(branch.location).addVector3(gestrypp.location);
                 this.ctx.lineTo(p.x, p.y);
             }
             //
-            const peak = branch.peak().addVector3(branch.location);
+            const peak = branch.peak().addVector3(branch.location).addVector3(gestrypp.location);
             //
             this.ctx.globalAlpha = this._getAlpha(peak, branch.depth);
             this.ctx.stroke();
@@ -111,5 +119,4 @@ class LineRenderer {
         this.ctx.canvas.width = document.getElementById('container').clientWidth;
         this.ctx.canvas.height = document.getElementById('container').clientHeight;
     }
-
 }

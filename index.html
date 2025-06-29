@@ -1,72 +1,112 @@
 <!DOCTYPE html>
 <html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Gestrypp</title>
+        <link rel="stylesheet" href="style.css" type="text/css" />
+        <script src="js/main.js" type="module"></script>
+    </head>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestrypp</title>
-    <link rel="stylesheet" href="style.css" type="text/css">
-    <script src="js/main.js" type="module"></script>
-</head>
-
-<body>
-    <div id="title">
-        <h1>Gestrypp</h1>
-        <p>v0.0.1</p>
-    </div>
-    <div id="container">
-        <canvas id="stage"></canvas>
-    </div>
-    <div id="controls" class="hidden">
-        <form autocomplete="off">
-            <div class="control-group">
-                <p><input type="number" class="control" id="iterations" value="6" min="1" max="7" step="1"
-                        pattern="\d*" title="Iterations">
-                    <label for="iterations">iterations</label>
-                </p>
-                <p><input type="number" class="control" id="length" value="9" min="1" max="100" step="1"
-                        pattern="\d*" title="Branch length">
-                    <label for="length">length</label>
-                </p>
-                <p><input type="number" class="control" id="angle" value="10" min="1" max="90" step="1"
-                        pattern="\d*" title="Branch angle">
-                    <label for="angle">angle</label>
-                </p>
-                <p><input type="number" class="control" id="petalProbability" value="0.004" min="0" max="1"
-                        pattern="[0]*[.,]?[0-9]*" step="0.0001" title="Petal probability">
-                    <label for="petalProbability">petal probability</label>
-                </p>
-            </div>
-            <div class="control-group">
-                <p>
-                    <input type="color" class="control" id="stemColor" value="#483d37">
-                    <label for="stemColor">Stem Color 1</label>
-                </p>
-                <p>
-                    <input type="color" class="control" id="stemColor2" value="#483d37">
-                    <label for="stemColor2">Stem Color 2</label>
-                </p>
-                <p>
-                    <input type="color" class="control" id="branchColor" value="">
-                    <label for="branchColor">Branch Color</label>
-                </p>
-                <p>
-                    <input type="color" class="control" id="petalColor" value="#800047">
-                    <label for="petalColor">Petal Color</label>
-                </p>
-            </div>
-        </form>
-        <div id="help">
-            <p>Press <strong>Ctrl + G</strong> to generate the L-System, <strong>Ctrl + C</strong> to toggle controls,
-                and <strong>Ctrl + S</strong> to save the image.</p>
-            <p>Drag the controls to reposition them.</p>
+    <body>
+        <div id="title">
+            <h1>Gestrypp</h1>
+            <p>v0.0.1</p>
         </div>
-    </div>
-    <div id="buttons">
-        <button id="toggle">Show Controls</button>
-        <button id="reset">Generate</button>
-        <button id="save">Save</button>
-    </div>
-</body>
-
+        <div id="container">
+            <canvas id="stage"></canvas>
+        </div>
+        <div id="controls" class="hidden">
+            <form autocomplete="off">
+                <div class="control-group">
+                    <p>
+                        <input
+                            type="number"
+                            class="control"
+                            id="iterations"
+                            value="6"
+                            min="1"
+                            max="7"
+                            step="1"
+                            pattern="\d*"
+                            title="Iterations"
+                        />
+                        <label for="iterations">iterations</label>
+                    </p>
+                    <p>
+                        <input
+                            type="number"
+                            class="control"
+                            id="length"
+                            value="9"
+                            min="1"
+                            max="100"
+                            step="1"
+                            pattern="\d*"
+                            title="Branch length"
+                        />
+                        <label for="length">length</label>
+                    </p>
+                    <p>
+                        <input
+                            type="number"
+                            class="control"
+                            id="angle"
+                            value="45"
+                            min="1"
+                            max="90"
+                            step="1"
+                            pattern="\d*"
+                            title="Branch angle"
+                        />
+                        <label for="angle">angle</label>
+                    </p>
+                    <p>
+                        <input
+                            type="number"
+                            class="control"
+                            id="petalProbability"
+                            value="0.004"
+                            min="0"
+                            max="1"
+                            pattern="[0]*[.,]?[0-9]*"
+                            step="0.0001"
+                            title="Petal probability"
+                        />
+                        <label for="petalProbability">petal probability</label>
+                    </p>
+                </div>
+                <div class="control-group">
+                    <p>
+                        <input type="color" class="control" id="stemColor" value="#483d37" />
+                        <label for="stemColor">Stem Color 1</label>
+                    </p>
+                    <p>
+                        <input type="color" class="control" id="stemColor2" value="#483d37" />
+                        <label for="stemColor2">Stem Color 2</label>
+                    </p>
+                    <p>
+                        <input type="color" class="control" id="branchColor" value="" />
+                        <label for="branchColor">Branch Color</label>
+                    </p>
+                    <p>
+                        <input type="color" class="control" id="petalColor" value="#800047" />
+                        <label for="petalColor">Petal Color</label>
+                    </p>
+                </div>
+            </form>
+            <div id="help">
+                <p>
+                    Press <strong>Ctrl + G</strong> to generate the L-System, <strong>Ctrl + C</strong> to toggle controls, and
+                    <strong>Ctrl + S</strong> to save the image.
+                </p>
+                <p>Use <strong>+</strong> and <strong>-</strong> to alter the scale</p>
+            </div>
+        </div>
+        <div id="buttons">
+            <button id="toggle">Show Controls</button>
+            <button id="reset">Generate</button>
+            <button id="save">Save</button>
+        </div>
+    </body>
 </html>

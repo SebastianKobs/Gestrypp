@@ -2,7 +2,32 @@
 
 import { Vector3 } from '../math/vector3.js';
 
-export { LSystem, Branch };
+export { LSystem, Branch, Gestrypp };
+
+class Gestrypp {
+    location = new Vector3();
+    //
+    branches = [];
+    //
+    boundingBox = {
+        t: 0,
+        l: 0,
+        b: 0,
+        r: 0,
+    };
+    //
+    constructor(branches, boundingBox) {
+        this.branches = branches;
+        this.boundingBox = boundingBox;
+    }
+    //
+    scale(scalar) {
+        for (const branch of this.branches) {
+            branch.scale(scalar);
+        }
+    }
+   
+}
 
 class Branch {
     location = new Vector3();
@@ -28,6 +53,13 @@ class Branch {
         //
         return new Vector3(0, 0, 0);
     }
+    scale(scalar) {
+        for (const vertex of this.vertices) {
+            vertex.multiplyScalar(scalar);
+        }
+        //
+        this.location.multiplyScalar(scalar);
+    }
 }
 
 class Turtle {
@@ -36,6 +68,11 @@ class Turtle {
     //
     currentX = 0;
     currentY = 0;
+    //
+    minX = Infinity;
+    minY = Infinity;
+    maxX = 0;
+    maxY = 0;
     //
     angle = 270;
     //
@@ -46,13 +83,23 @@ class Turtle {
     constructor() {
         this.reset();
     }
+
+    gestrypp() {
+        console.log('t:', this.minY, 'b:', this.maxY, 'l:', this.minX, 'r:', this.maxX);
+        return new Gestrypp(this.branches, {
+            t: this.minY,
+            l: this.minX,
+            b: this.maxY,
+            r: this.maxX,
+        });
+    }
     //
     step(length) {
         if (this.stack.length === 0) {
             length *= 0.5;
         } else if (this.stack.length === 1) {
             length *= 0.7;
-        }
+        } 
         //
         const rad = (this.angle * Math.PI) / 180;
         //
@@ -64,6 +111,17 @@ class Turtle {
         //
         this.branchX += xOffset;
         this.branchY += yOffset;
+        //
+        if (this.currentY < this.minY) {
+            this.minY = this.currentY;
+        } else if (this.currentY > this.maxY) {
+            this.maxY = this.currentY;
+        }
+        if (this.currentX < this.minX) {
+            this.minX = this.currentX;
+        } else if (this.currentX > this.maxX) {
+            this.maxX = this.currentX;
+        }
         //
         this.branches[this.currentBranch].addVertex(this.branchX, this.branchY);
     }
@@ -95,11 +153,15 @@ class Turtle {
     }
     //
     reset() {
-        this.currentX = document.getElementById('container').clientWidth / 2;
-        this.currentY = document.getElementById('container').clientHeight;
+        this.currentX = 0;
+        this.currentY = 0;
         this.angle = 270;
         this.branches = [new Branch(this.currentX, this.currentY, 0)];
         this.currentBranch = 0;
+        this.minX = Infinity;
+        this.minY = Infinity;
+        this.maxX = 0;
+        this.maxY = 0;
     }
     //
     _newBranch() {
@@ -174,7 +236,7 @@ class LSystem {
         console.timeEnd('turtle');
         //
         console.time('render');
-        this.renderer.render(this.turtle.branches);
+        this.renderer.render(this.turtle.gestrypp());
         console.timeEnd('render');
     }
     //

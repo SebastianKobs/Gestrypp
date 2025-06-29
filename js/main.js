@@ -18,14 +18,7 @@ import { LineRenderer } from './modules/renderer/lineRenderer.js';
         //
         renderer = new LineRenderer(canvas);
         //
-        sl = new LSystem(
-            renderer,
-            axiom,
-            rules,
-            document.getElementById('iterations').value,
-            9,
-            10
-        );
+        sl = new LSystem(renderer, axiom, rules, document.getElementById('iterations').value, 9, 12);
         //
         document.getElementById('reset').addEventListener('click', () => {
             sl.render();
@@ -45,10 +38,10 @@ import { LineRenderer } from './modules/renderer/lineRenderer.js';
                 //
                 switch (e.target.id) {
                     case 'iterations':
-                        sl.iterations = Helper.clamp( Helper.ensureNumberFormat(value, sl.iterations),min, max,);
+                        sl.iterations = Helper.clamp(Helper.ensureNumberFormat(value, sl.iterations), min, max);
                         break;
                     case 'length':
-                        sl.length = Helper.clamp( Helper.ensureNumberFormat(value, sl.length), min, max);
+                        sl.length = Helper.clamp(Helper.ensureNumberFormat(value, sl.length), min, max);
                         break;
                     case 'angle':
                         sl.angle = Helper.clamp(Helper.ensureNumberFormat(value, sl), min, max);
@@ -96,17 +89,27 @@ import { LineRenderer } from './modules/renderer/lineRenderer.js';
                 }
                 //
                 switch (e.key) {
-                    case 'g': //
+                    case 'g': 
                         e.preventDefault();
                         sl.render();
                         break;
-                    case 'c': // C
+                    case 'c': 
                         e.preventDefault();
                         document.getElementById('toggle').click();
                         break;
-                    case 's': // S
+                    case 's': 
                         e.preventDefault();
                         Helper.save(canvas);
+                        break;
+                    case '+':
+                         e.preventDefault();
+                        renderer.scale += 0.1;
+                        sl.render();
+                        break;
+                    case '-': 
+                        e.preventDefault();
+                        renderer.scale -= 0.1;
+                        sl.render();
                         break;
                 }
             },
@@ -116,6 +119,7 @@ import { LineRenderer } from './modules/renderer/lineRenderer.js';
         document.getElementById('petalProbability').value = renderer.petalPropability;
         document.getElementById('iterations').value = sl.iterations;
         document.getElementById('length').value = sl.length;
+        document.getElementById('angle').value = sl.angle;
         document.getElementById('stemColor').value = renderer.strokeStyleStem.toHexString();
         document.getElementById('stemColor2').value = renderer.strokeStyleStem2.toHexString();
         document.getElementById('branchColor').value = renderer.strokeStyleBranch.toHexString();
