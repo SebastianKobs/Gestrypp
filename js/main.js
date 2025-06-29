@@ -1,9 +1,9 @@
 'use strict';
 
-import { Draggable } from './modules/utils/draggable.js';
-import { Helper } from './modules/utils/helper.js';
-import { LSystem } from './modules/lindenmayer/lsystem.js';
-import { LineRenderer } from './modules/renderer/lineRenderer.js';
+import { Draggable } from './modules/utils/Draggable.js';
+import { Helper } from './modules/utils/Helper.js';
+import { LSystem } from './modules/lindenmayer/LSystem.js';
+import { LineRenderer } from './modules/renderer/LineRenderer.js';
 //
 (function () {
     const init = function () {

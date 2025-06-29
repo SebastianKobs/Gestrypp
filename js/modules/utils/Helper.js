@@ -1,7 +1,7 @@
 'use strict';
 
 export { Helper };
-import { Color } from './color.js';
+import { Color } from './Color.js';
 
 class Helper {
     static hexToColor(hex, alpha = 1) {

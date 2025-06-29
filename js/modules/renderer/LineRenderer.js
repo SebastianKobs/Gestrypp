@@ -2,7 +2,7 @@
 
 export { LineRenderer };
 //
-import { Color } from '../utils/color.js';
+import { Color } from '../utils/Color.js';
 //
 class LineRenderer {
     strokeStyleStem = new Color(61, 46, 43, 0.5);
