@@ -1,6 +1,6 @@
 'use strict';
 
-export { Turtle};
+export { Turtle };
 
 import { Gestrypp } from './Gestrypp.js';
 import { Branch } from './Branch.js';
@@ -41,9 +41,9 @@ class Turtle {
             length *= 0.5;
         } else if (this.stack.length === 1) {
             length *= 0.7;
-        } 
+        }
         //
-        const rad = (this.angle * Math.PI) / 180;
+        const rad = this.angle * (Math.PI / 180);
         //
         const xOffset = length * Math.cos(rad);
         const yOffset = length * Math.sin(rad);

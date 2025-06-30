@@ -56,7 +56,6 @@
 
     #controls {
         width: 500px;
-        height: 250px;
         left: 20px;
         position: fixed;
         border-radius: 12px;
@@ -133,7 +132,9 @@
     }
     #help p{
         user-select: none;
-
+    }
+    #help p:last-child {
+        margin-bottom: 0;
     }
 
     #title {
