@@ -6,7 +6,7 @@
         <title>Document</title>
     </head>
     <body>
-        <canvas id="canvas" width="320" height="200"></canvas>
+        <canvas id="canvas" width="1280" height="800"></canvas>
         <script type="module">
             import { Camera } from './js/modules/renderer/3d/Camera.js';
             import { Color } from './js/modules/utils/Color.js';
@@ -15,32 +15,33 @@
             import { Mesh } from './js/modules/renderer/3d/Mesh.js';
             import { ThreeDRenderer } from './js/modules/renderer/3d/ThreeDRenderer.js';
             //
+            import { teapot } from './js/modules/renderer/3d/testGeometry/teapot.js';
+            import { unityCube } from './js/modules/renderer/3d/testGeometry/unityCube.js';
+            //
             const canvas = document.getElementById('canvas');
-            const position = new Vector3(0, 0, 10);
+            const position = new Vector3(0, 0, -200);
             const target = new Vector3(0, 0, 0);
             //
             const camera = new Camera(position, target, new Vector3(0, 1, 0), canvas.width / canvas.height);
             //
-            const cube = new Mesh();
-            cube.color = new Color(255, 255, 0);
-            //
-            cube.addVertex(new Vector3(-1, 1, 1));
-            cube.addVertex(new Vector3(1, 1, 1));
-            cube.addVertex(new Vector3(-1, -1, 1));
-            cube.addVertex(new Vector3(-1, -1, -1));
-            cube.addVertex(new Vector3(-1, 1, -1));
-            cube.addVertex(new Vector3(1, 1, -1));
-            cube.addVertex(new Vector3(1, -1, 1));
-            cube.addVertex(new Vector3(1, -1, -1));
-            //
             const meshes = [];
-            meshes.push(cube);
+            const teapotMesh = teapot();
+            const unityCubeMesh = unityCube();
+            //
+            unityCubeMesh.unity();
+            unityCubeMesh.scale(0.005 * canvas.height);
+            teapotMesh.position = new Vector3(0, 0, 20);
+            unityCubeMesh.position = new Vector3(20, 0, 0);
+            console.log(unityCubeMesh.boundingBox.getScale());
+
+            //
+            meshes.push(unityCubeMesh);
             //
             const renderer = new ThreeDRenderer(canvas);
             //
             const update = () => {
-                cube.rotation.x += 0.01;
-                cube.rotation.y += 0.01;
+                unityCubeMesh.rotation.x += 0.01;
+                unityCubeMesh.rotation.y += 0.01;
                 renderer.render(camera, meshes);
                 requestAnimationFrame(update);
             };

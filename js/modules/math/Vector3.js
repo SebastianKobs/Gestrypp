@@ -83,6 +83,14 @@ class Vector3 {
     clone() {
         return new Vector3(this.x, this.y, this.z);
     }
+
+    distanceTo(v) {
+        const dx = this.x - v.x;
+        const dy = this.y - v.y;
+        const dz = this.z - v.z;
+        //
+        return Math.sqrt(dx * dx + dy * dy + dz * dz);
+    }
     //
     toString() {
         return `Vector3(${this.x}, ${this.y}, ${this.z})`;

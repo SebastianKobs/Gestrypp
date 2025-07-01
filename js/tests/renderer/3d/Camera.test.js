@@ -33,8 +33,8 @@ test('Camera getProjectionMatrix', () => {
     const result = [
         1.4281480312347412, 0, 0, 0, 
         0, 1.4281480312347412, 0, 0, 
-        0, 0, 1.0000499486923218, 1, 
-        0, 0, -0.10000500082969666, 0
+        0, 0, -1.000100010001, 1, 
+        0, 0,  0.1000100010001000, 0
     ];
     //
     projectionMatrix.elements.forEach((element, index) => {

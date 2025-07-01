@@ -86,10 +86,10 @@ test('Matrix4 Translate', () => {
     const matrix = Matrix4.Translate(x, y, z);
     // prettier-ignore
     const result = [
-        1, 0, 0, x, 
-        0, 1, 0, y, 
-        0, 0, 1, z, 
-        0, 0, 0, 1
+        1, 0, 0, 0, 
+        0, 1, 0, 0, 
+        0, 0, 1, 0, 
+        -x, -y, -z, 1
     ];
     //
     expect(matrix.elements).toEqual(result);
@@ -148,15 +148,15 @@ test('Matrix4 Perspective', () => {
     const fov = 70 * (Math.PI / 180);
     const aspect = 1;
     const znear = 0.1;
-    const zfar = 2000;
+    const zfar = 1000;
     //
     const matrix = Matrix4.Perspective(fov, aspect, znear, zfar);
     // prettier-ignore
     const result = [
         1.4281480312347412, 0, 0, 0, 
         0, 1.4281480312347412, 0, 0, 
-        0, 0, 1.0000499486923218, 1, 
-        0, 0, -0.10000500082969666, 0
+        0, 0, -1.000100010001, 1, 
+        0, 0,  0.1000100010001000, 0
     ];
     //
     matrix.elements.forEach((element, index) => {

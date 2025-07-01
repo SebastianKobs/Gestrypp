@@ -89,10 +89,10 @@ class Matrix4 {
         const m = new Matrix4();
         // prettier-ignore
         m.set(
-            1, 0, 0, x, 
-            0, 1, 0, y, 
-            0, 0, 1, z, 
-            0, 0, 0, 1
+            1, 0, 0, 0, 
+            0, 1, 0, 0, 
+            0, 0, 1, 0, 
+            -x, -y, -z, 1
         );
         //
         return m;
@@ -131,10 +131,10 @@ class Matrix4 {
         me[5] = tan;
         me[4] = me[6] = me[7] = 0.0;
         me[8] = me[9] = 0.0;
-        me[10] = -zfar / (znear - zfar);
+        me[10] = -zfar / (zfar - znear);
         me[11] = 1.0;
         me[12] = me[13] = me[15] = 0.0;
-        me[14] = (znear * zfar) / (znear - zfar);
+        me[14] = -(znear * zfar) / (znear - zfar);
         //
         return m;
     }

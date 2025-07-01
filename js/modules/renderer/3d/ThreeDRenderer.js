@@ -7,6 +7,8 @@ class ThreeDRenderer {
     backbuffer = null;
     width = 0;
     height = 0;
+    fps = 0;
+    step = 0;
     //
     constructor(canvas) {
         this.ctx = canvas.getContext('2d');
@@ -37,6 +39,7 @@ class ThreeDRenderer {
         }
         //
         this.ctx.putImageData(this.backbuffer, 0, 0);
+        this.ctx.font = '15px sans-serif';
     }
     //
     _convertToScreenCoordinates(x, y) {
