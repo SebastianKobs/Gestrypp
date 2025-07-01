@@ -113,9 +113,9 @@ class Matrix4 {
         const m = new Matrix4();
         // prettier-ignore
         m.set(
-            _right.x, _up.x, -_forward.x, 0,
-            _right.y, _up.y, -_forward.y, 0,
-            _right.z, _up.z, -_forward.z, 0,
+            _right.x, _up.x, _forward.x, 0,
+            _right.y, _up.y, _forward.y, 0,
+            _right.z, _up.z, _forward.z, 0,
             -translationX, -translationY, -translationZ, 1
         );
         //

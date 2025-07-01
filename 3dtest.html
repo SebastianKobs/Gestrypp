@@ -19,7 +19,7 @@
             import { unityCube } from './js/modules/renderer/3d/testGeometry/unityCube.js';
             //
             const canvas = document.getElementById('canvas');
-            const position = new Vector3(0, 0, -200);
+            const position = new Vector3(40, 0, -20);
             const target = new Vector3(0, 0, 0);
             //
             const camera = new Camera(position, target, new Vector3(0, 1, 0), canvas.width / canvas.height);
@@ -29,19 +29,16 @@
             const unityCubeMesh = unityCube();
             //
             unityCubeMesh.unity();
-            unityCubeMesh.scale(0.005 * canvas.height);
-            teapotMesh.position = new Vector3(0, 0, 20);
-            unityCubeMesh.position = new Vector3(20, 0, 0);
-            console.log(unityCubeMesh.boundingBox.getScale());
+
+            teapotMesh.position = new Vector3(0, 0, 0);
+            unityCubeMesh.position = new Vector3(0, 0, 0);
 
             //
-            meshes.push(unityCubeMesh);
+            meshes.push(teapotMesh);
             //
             const renderer = new ThreeDRenderer(canvas);
             //
             const update = () => {
-                unityCubeMesh.rotation.x += 0.01;
-                unityCubeMesh.rotation.y += 0.01;
                 renderer.render(camera, meshes);
                 requestAnimationFrame(update);
             };
