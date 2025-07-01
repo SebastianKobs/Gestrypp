@@ -10,6 +10,7 @@ class Mesh {
     position = new Vector3(0, 0, 0);
     rotation = new Vector3(0, 0, 0);
     vertices = [];
+    tris = [];
     color = new Color(255, 255, 255);
     //
     boundingBox = new BoundingBox();
@@ -24,6 +25,12 @@ class Mesh {
         this.vertices.push(vertex);
         //
         this.boundingBox.update(vertex);
+        //
+        return this;
+    }
+    //
+    addTri(tri) {
+        this.tris.push(tri);
         //
         return this;
     }
@@ -63,5 +70,9 @@ class Mesh {
         //
 
         return rotationMatrix.multiply(transformationMatrix);
+    }
+    //
+    hasFaces() {
+        return this.tris.length > 0;
     }
 }

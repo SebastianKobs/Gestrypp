@@ -39,7 +39,7 @@ test('unity', () => {
     }
 });
 //
-test('Mesh scale', () => {
+test('scale', () => {
     const cube = unityCube();
     cube.scale(2);
     expect(cube.boundingBox.getScale()).toEqual(2);
