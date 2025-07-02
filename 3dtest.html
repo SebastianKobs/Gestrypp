@@ -15,8 +15,7 @@
             import { Mesh } from './js/modules/renderer/3d/Mesh.js';
             import { ThreeDRenderer } from './js/modules/renderer/3d/ThreeDRenderer.js';
             //
-            import { teapot } from './js/modules/renderer/3d/testGeometry/teapot.js';
-            import { unityCube } from './js/modules/renderer/3d/testGeometry/unityCube.js';
+            import { WavefrontObjParser } from './js/modules/renderer/3d/WavefrontObjParser.js';
             //
             const canvas = document.getElementById('canvas');
             const position = new Vector3(0, 0, -20);
@@ -25,26 +24,23 @@
             const camera = new Camera(position, target, new Vector3(0, 1, 0), canvas.width / canvas.height);
             //
             const meshes = [];
-            const teapotMesh = teapot();
-            const unityCubeMesh = unityCube();
             //
-            teapotMesh.unity();
+            const response = await fetch('js/modules/renderer/3d/testGeometry/suzanne.obj');
+            const obj = await response.text();
             //
-            teapotMesh.position = new Vector3(0, 0, 0);
-            unityCubeMesh.position = new Vector3(0, 0, 0);
-            //
-            meshes.push(unityCubeMesh);
-            meshes.push(teapotMesh);
+            const suzanne = WavefrontObjParser.parse(obj);
+            suzanne.scale(4);
+            suzanne.position = new Vector3(0, 0, 0);
+            suzanne.rotation.z = 180 * (Math.PI / 180); // Rotate to face the camera
+
+            meshes.push(suzanne);
             //
             const renderer = new ThreeDRenderer(canvas);
             //
             const update = () => {
                 const step = performance.now() / 1000;
-                unityCubeMesh.color = new Color(255 * Math.sin(step), 255 * Math.cos(step), 128, 1);
-                unityCubeMesh.rotation.y += 0.01;
-                unityCubeMesh.rotation.x += 0.01;
-                teapotMesh.rotation.y -= 0.01;
-                teapotMesh.rotation.z -= 0.01;
+                suzanne.color = new Color(255 * Math.sin(step), 255 * Math.cos(step), 128, 1);
+                suzanne.rotation.y += 0.01;
                 renderer.render(camera, meshes);
                 requestAnimationFrame(update);
             };

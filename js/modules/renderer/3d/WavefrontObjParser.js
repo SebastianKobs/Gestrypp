@@ -46,7 +46,7 @@ class WavefrontObjParser {
                         hadErrors = true;
                         continue;
                     }
-                    mesh.addTri(new Tri(...values.map((part) => part.split('/')[0]).map(Number)));
+                    mesh.addTri(new Tri(...values.map((part) => part.split('/')[0] - 1)));
                     break;
             }
         }

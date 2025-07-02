@@ -31,18 +31,18 @@ f 2/12/4 6/8/4 3/4/4
 f 4/13/5 3/9/5 8/11/5
 f 5/6/6 1/12/6 8/11/6
      */
-    cube.addTri(new Tri(2, 3, 4));
-    cube.addTri(new Tri(8, 7, 6));
+    cube.addTri(new Tri(1, 2, 3));
+    cube.addTri(new Tri(7, 6, 5));
+    cube.addTri(new Tri(4, 5, 1));
     cube.addTri(new Tri(5, 6, 2));
-    cube.addTri(new Tri(6, 7, 3));
-    cube.addTri(new Tri(3, 7, 8));
-    cube.addTri(new Tri(1, 4, 8));
-    cube.addTri(new Tri(1, 2, 4));
-    cube.addTri(new Tri(5, 8, 6));
+    cube.addTri(new Tri(2, 6, 7));
+    cube.addTri(new Tri(0, 3, 7));
+    cube.addTri(new Tri(0, 1, 3));
+    cube.addTri(new Tri(4, 7, 5));
+    cube.addTri(new Tri(0, 4, 1));
     cube.addTri(new Tri(1, 5, 2));
-    cube.addTri(new Tri(2, 6, 3));
-    cube.addTri(new Tri(4, 3, 8));
-    cube.addTri(new Tri(5, 1, 8));
+    cube.addTri(new Tri(3, 2, 7));
+    cube.addTri(new Tri(4, 0, 7));
     //
     return cube;
 };
