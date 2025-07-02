@@ -1,6 +1,6 @@
 import { expect, test } from 'vitest';
 
-import { unityCube } from '../../../modules/renderer/3d/testGeometry/unityCube';
+import { unityCube } from '../../../modules/renderer/3d/testGeometry/unityCube.js';
 
 test('unityCube', () => {
     const cube = unityCube();
