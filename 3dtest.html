@@ -41,6 +41,7 @@
                 const step = performance.now() / 1000;
                 suzanne.color = new Color(255 * Math.sin(step), 255 * Math.cos(step), 128, 1);
                 suzanne.rotation.y += 0.01;
+                suzanne.rotation.x += 0.01;
                 renderer.render(camera, meshes);
                 requestAnimationFrame(update);
             };

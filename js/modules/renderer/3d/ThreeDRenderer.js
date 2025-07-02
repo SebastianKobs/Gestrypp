@@ -11,13 +11,18 @@ class ThreeDRenderer {
     depthBuffer = null;
     width = 0;
     height = 0;
+    halfWidth = 0;
+    halfHeight = 0;
     fps = 0;
     step = 0;
     //
     constructor(canvas) {
-        this.ctx = canvas.getContext('2d');
+        const offscreen = canvas.transferControlToOffscreen();
+        this.ctx = offscreen.getContext('2d');
         this.width = canvas.width;
         this.height = canvas.height;
+        this.halfWidth = this.width / 2.0;
+        this.halfHeight = this.height / 2.0;
     }
     //
     clear() {
@@ -31,12 +36,13 @@ class ThreeDRenderer {
         console.time('render');
         const viewMatrix = camera.getViewMatrix();
         const projectionMatrix = camera.getProjectionMatrix();
+        const vpMatrix = viewMatrix.multiply(projectionMatrix);
         //
         this.clear();
         //
         for (const mesh of meshes) {
             const worldMatrix = mesh.getWorldMatrix();
-            const mvpMatrix = worldMatrix.multiply(viewMatrix).multiply(projectionMatrix);
+            const mvpMatrix = worldMatrix.multiply(vpMatrix);
             //
             if (mesh.hasFaces()) {
                 this._drawMeshTris(mesh, mvpMatrix);
@@ -57,7 +63,6 @@ class ThreeDRenderer {
     }
     //
     _drawMeshTris(mesh, mvpMatrix) {
-        let i = 1;
         for (const tri of mesh.tris) {
             const vertexA = mesh.vertices[tri.v1];
             const vertexB = mesh.vertices[tri.v2];
@@ -67,17 +72,14 @@ class ThreeDRenderer {
             const pixelB = this._convertToScreenCoordinates(vertexB.transformCoordinate(mvpMatrix));
             const pixelC = this._convertToScreenCoordinates(vertexC.transformCoordinate(mvpMatrix));
             //
-            mesh.color.a = (1 / mesh.tris.length) * i;
-            i++;
-            //
             this._rasterizeTri(pixelA, pixelB, pixelC, mesh.color);
             this._wireframeTri(pixelA, pixelB, pixelC, new Color(255, 255, 255, 1));
         }
     }
     //
     _convertToScreenCoordinates(v) {
-        const screenX = v.x * this.width + this.width / 2.0;
-        const screenY = -v.y * this.height + this.height / 2.0;
+        const screenX = v.x * this.width + this.halfWidth;
+        const screenY = -v.y * this.height + this.halfHeight;
         //
         return new Vector3(screenX, screenY, v.z);
     }
@@ -118,14 +120,17 @@ class ThreeDRenderer {
         //
         let err = dx - dy;
         //
-
+        const steps = Math.max(dx, dy) || 1;
+        let step = 0;
+        //
         while (true) {
-            const dx0 = x0 - p0.x;
-            const dx1 = x1 - p0.x;
-            const scaleX = Math.abs(dx0 / dx1);
-            const z = p0.z * (1 - scaleX) + p1.z * scaleX;
+            //
+            const factor = steps === 0 ? 0 : step / steps;
+            //
+            const z = p0.z * (1 - factor) + p1.z * factor; // lerp
             //
             this._putPixel(new Vector3(x0, y0, z), color, false);
+            //
             if (x0 === x1 && y0 === y1) {
                 break;
             }
@@ -141,6 +146,7 @@ class ThreeDRenderer {
                 err += dx;
                 y0 += sy;
             }
+            step++;
         }
     }
     //
@@ -152,10 +158,6 @@ class ThreeDRenderer {
     //
     _rasterizeTri(A, B, C, color) {
         const ABC = this._edgeFunction(A, B, C);
-
-        const colorA = new Color(255, 0, 0); // Red
-        const colorB = new Color(0, 255, 0); // Green
-        const colorC = new Color(0, 0, 255); // Blue
         //
         if (ABC < 0) {
             return;
@@ -167,6 +169,7 @@ class ThreeDRenderer {
         const maxY = Math.max(A.y, B.y, C.y);
         //
         const P = new Vector3(0, 0, 0);
+        //
         for (P.y = minY; P.y < maxY; P.y++) {
             for (P.x = minX; P.x < maxX; P.x++) {
                 const ABP = this._edgeFunction(A, B, P);
@@ -179,21 +182,14 @@ class ThreeDRenderer {
                 const weightA = BCP / ABC;
                 const weightB = CAP / ABC;
                 const weightC = ABP / ABC;
-
-                // Interpolate the colours at point P
-                const r = colorA.r * weightA + colorB.r * weightB + colorC.r * weightC;
-                const g = colorA.g * weightA + colorB.g * weightB + colorC.g * weightC;
-                const b = colorA.b * weightA + colorB.b * weightB + colorC.b * weightC;
                 //
                 P.z = A.z * weightA + B.z * weightB + C.z * weightC;
-                //const c = new Color(r, g, b, P.z * 0.5 + 1); // Use the mesh color instead of interpolated colors
-                //this._putPixel(P, c);
-                this._putPixel(P, color); // Use the mesh color instead of interpolated colors
-                // Draw the pixel
+                //
+                this._putPixel(P, color);
             }
         }
     }
-
+    //
     _edgeFunction(a, b, c) {
         return (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x);
     }
