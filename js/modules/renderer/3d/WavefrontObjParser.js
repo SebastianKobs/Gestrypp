@@ -24,6 +24,8 @@ class WavefrontObjParser {
             const values = parts.slice(1);
             //
             let faces = null;
+            let normals = null;
+            let tri = null;
             //
             switch (parts[0]) {
                 case 'v':
@@ -35,6 +37,15 @@ class WavefrontObjParser {
                     //
                     mesh.addVertex(new Vector3(...values.map(Number)));
                     break;
+                case 'vn':
+                    if (values.length < 3 || values.some((value) => isNaN(Number(value)))) {
+                        console.warn(`Invalid normal on line: ${line}`);
+                        hadErrors = true;
+                        continue;
+                    }
+                    //
+                    mesh.addNormal(new Vector3(...values.map(Number)));
+                    break;
                 case 'f':
                     if (values.length < 3) {
                         console.warn(`Invalid face on line: ${line}`);
@@ -42,13 +53,24 @@ class WavefrontObjParser {
                         continue;
                     }
                     //
-                    faces = values.map((part) => part.split('/')[0]).map(Number);
-                    if (faces.some((value) => isNaN(value) || value <= 0)) {
+                    faces = values.map((part) => part.split('/')[0] - 1).map(Number);
+                    //
+                    normals = values.map((part) => part.split('/')[2] - 1).map(Number);
+                    //
+                    if (faces.some((value) => isNaN(value) || value < 0)) {
                         console.warn(`Invalid face on line: ${line}`);
                         hadErrors = true;
                         continue;
                     }
-                    mesh.addTri(new Tri(...values.map((part) => part.split('/')[0] - 1)));
+                    //
+                    if (normals.some((value) => isNaN(value) || value < 0)) {
+                        console.warn(`Invalid normal on line: ${line}`);
+                        hadErrors = true;
+                        continue;
+                    }
+                    tri = new Tri(...faces);
+                    tri.addNormals(...normals);
+                    mesh.addTri(tri);
                     break;
             }
         }

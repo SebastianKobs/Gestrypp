@@ -16,6 +16,7 @@ class ThreeDRenderer {
     accumulatedTime = 0;
     fps = 0;
     steps = 0;
+    lightPos = new Vector3(0, 60, -40);
 
     //
     constructor(canvas) {
@@ -47,7 +48,7 @@ class ThreeDRenderer {
             const mvpMatrix = worldMatrix.multiply(vpMatrix);
             //
             if (mesh.hasFaces()) {
-                this._drawMeshTris(mesh, mvpMatrix);
+                this._drawMeshTris(mesh, mvpMatrix, worldMatrix);
             } else {
                 this._drawMeshVertices(mesh, mvpMatrix);
             }
@@ -76,18 +77,30 @@ class ThreeDRenderer {
         }
     }
     //
-    _drawMeshTris(mesh, mvpMatrix) {
+    _drawMeshTris(mesh, mvpMatrix, worldMatrix) {
         for (const tri of mesh.tris) {
             const vertexA = mesh.vertices[tri.v1];
             const vertexB = mesh.vertices[tri.v2];
             const vertexC = mesh.vertices[tri.v3];
             //
-            const pixelA = this._convertToScreenCoordinates(vertexA.transformCoordinate(mvpMatrix));
-            const pixelB = this._convertToScreenCoordinates(vertexB.transformCoordinate(mvpMatrix));
-            const pixelC = this._convertToScreenCoordinates(vertexC.transformCoordinate(mvpMatrix));
+            const pixelA = {
+                pixel: this._convertToScreenCoordinates(vertexA.transformCoordinate(mvpMatrix)),
+                normal: mesh.normals[tri.n1].transformCoordinate(worldMatrix),
+                world: vertexA.transformCoordinate(worldMatrix),
+            };
+            const pixelB = {
+                pixel: this._convertToScreenCoordinates(vertexB.transformCoordinate(mvpMatrix)),
+                normal: mesh.normals[tri.n2].transformCoordinate(worldMatrix),
+                world: vertexB.transformCoordinate(worldMatrix),
+            };
+            const pixelC = {
+                pixel: this._convertToScreenCoordinates(vertexC.transformCoordinate(mvpMatrix)),
+                normal: mesh.normals[tri.n3].transformCoordinate(worldMatrix),
+                world: vertexC.transformCoordinate(worldMatrix),
+            };
             //
             this._rasterizeTri(pixelA, pixelB, pixelC, mesh.color);
-            this._wireframeTri(pixelA, pixelB, pixelC, new Color(255, 255, 255, 1));
+            //this._wireframeTri(pixelA, pixelB, pixelC, new Color(255, 255, 255, 1));
         }
     }
     //
@@ -120,7 +133,6 @@ class ThreeDRenderer {
         this.backbuffer.data[index + 2] = color.b;
         this.backbuffer.data[index + 3] = color.a * 255;
     }
-
     //
     _drawBrezenhamLine(p0, p1, color) {
         let x0 = p0.x >> 0;
@@ -167,24 +179,31 @@ class ThreeDRenderer {
     }
     //
     _wireframeTri(A, B, C, color) {
-        this._drawBrezenhamLine(A, B, color);
-        this._drawBrezenhamLine(B, C, color);
-        this._drawBrezenhamLine(C, A, color);
+        const pA = A.pixel;
+        const pB = B.pixel;
+        const pC = C.pixel;
+        this._drawBrezenhamLine(pA, pB, color);
+        this._drawBrezenhamLine(pB, pC, color);
+        this._drawBrezenhamLine(pC, pA, color);
     }
     /**
      * see https://fgiesen.wordpress.com/2013/02/10/optimizing-the-basic-rasterizer/
      */
-    _rasterizeTri(v0, v1, v2, color) {
+    _rasterizeTri(A, B, C, color) {
+        const v0 = A.pixel;
+        const v1 = B.pixel;
+        const v2 = C.pixel;
+        //
         const area = this._edgeFunction(v0, v1, v2);
         //
         if (area < 0) {
             return;
         }
         //
-        const minX = Math.min(v0.x, v1.x, v2.x);
-        const minY = Math.min(v0.y, v1.y, v2.y);
-        const maxX = Math.max(v0.x, v1.x, v2.x);
-        const maxY = Math.max(v0.y, v1.y, v2.y);
+        const minX = ~~Math.min(v0.x, v1.x, v2.x);
+        const minY = ~~Math.min(v0.y, v1.y, v2.y);
+        const maxX = ~~Math.max(v0.x, v1.x, v2.x);
+        const maxY = ~~Math.max(v0.y, v1.y, v2.y);
         //
         const p = new Vector3(minX, minY, 0);
         //
@@ -200,23 +219,38 @@ class ThreeDRenderer {
         const B12 = v2.x - v1.x;
         const B20 = v0.x - v2.x;
         //
+        const nDotLA = this._computeNDotL(A.world, A.normal, this.lightPos);
+        const nDotLB = this._computeNDotL(B.world, B.normal, this.lightPos);
+        const nDotLC = this._computeNDotL(C.world, C.normal, this.lightPos);
+        //
+        const colorA = new Color(color.r * nDotLA, color.g * nDotLA, color.b * nDotLA, color.a);
+        const colorB = new Color(color.r * nDotLB, color.g * nDotLB, color.b * nDotLB, color.a);
+        const colorC = new Color(color.r * nDotLC, color.g * nDotLC, color.b * nDotLC, color.a);
+        //
         for (p.y = minY; p.y <= maxY; p.y++) {
             let w0 = w0_row;
             let w1 = w1_row;
             let w2 = w2_row;
             //
             for (p.x = minX; p.x <= maxX; p.x++) {
-                if ((w0 | w1 | w2) >= 0) {
-                    this._putPixel(p, color);
-                }
-                //
                 const weightA = w0_row / area;
                 const weightB = w1_row / area;
                 const weightC = w2_row / area;
+                if ((w0 | w1 | w2) >= 0) {
+                    //
+
+                    const r = weightA * colorA.r + weightB * colorB.r + weightC * colorC.r;
+                    const g = weightA * colorA.g + weightB * colorB.g + weightC * colorC.g;
+                    const b = weightA * colorA.b + weightB * colorB.b + weightC * colorC.b;
+                    const colorShaded = new Color(r, g, b, color.a);
+                    this._putPixel(p, colorShaded);
+                }
+
                 //
                 w0 += A12;
                 w1 += A20;
                 w2 += A01;
+                //
                 p.z = v0.z * weightA + v1.z * weightB + v2.z * weightC;
             }
             //
@@ -226,6 +260,15 @@ class ThreeDRenderer {
         }
     }
     //
+    _computeNDotL = function (vertex, normal, lightPosition) {
+        const lightDirection = vertex.subtract(lightPosition);
+
+        normal.normalize();
+        lightDirection.normalize();
+
+        return Math.max(0, normal.dot(lightDirection));
+    };
+
     _edgeFunction(a, b, c) {
         return (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x);
     }

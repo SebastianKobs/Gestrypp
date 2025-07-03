@@ -7,9 +7,9 @@ import { unityCube } from '../../../modules/renderer/3d/testGeometry/unityCube.j
 test('WavefrontObjParser with Unity Cube obj', () => {
     const cubeObjFile = fs.readFileSync('js/modules/renderer/3d/testGeometry/cube.obj', 'utf8');
     const mesh = WavefrontObjParser.parse(cubeObjFile);
-    console.log(mesh);
+    //
     const uc = unityCube();
-    console.log(uc);
+    //
     expect(mesh).toStrictEqual(uc);
 });
 //
@@ -30,6 +30,10 @@ test('WavefrontObjParser format Warnings', () => {
     //
     expect(consoleMock).toHaveBeenLastCalledWith(`Invalid face on line: ${missingFaceObj}`);
     //
+    const misssingOrInvalidNormalObj = 'f 1/2/3 4/5/a 1/1/2';
+    WavefrontObjParser.parse(misssingOrInvalidNormalObj);
+    //
+    expect(consoleMock).toHaveBeenLastCalledWith(`Invalid normal on line: ${misssingOrInvalidNormalObj}`);
     const nonNumericVertex = 'v 1.0 1.0 a';
     WavefrontObjParser.parse(nonNumericVertex);
     //

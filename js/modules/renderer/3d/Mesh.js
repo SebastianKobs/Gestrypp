@@ -11,6 +11,7 @@ class Mesh {
     rotation = new Vector3(0, 0, 0);
     vertices = [];
     tris = [];
+    normals = [];
     color = new Color(255, 255, 255);
     //
     boundingBox = new BoundingBox();
@@ -25,6 +26,12 @@ class Mesh {
         this.vertices.push(vertex);
         //
         this.boundingBox.update(vertex);
+        //
+        return this;
+    }
+    //
+    addNormal(normal) {
+        this.normals.push(normal);
         //
         return this;
     }
@@ -68,7 +75,6 @@ class Mesh {
         //
         const rotationMatrix = roll.multiply(pitch).multiply(yaw);
         //
-
         return rotationMatrix.multiply(transformationMatrix);
     }
     //
