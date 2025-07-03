@@ -15,9 +15,11 @@ class WavefrontObjParser {
         let hadErrors = false;
         //
         for (const line of lines) {
-            const parts = line.trim().split(/\s+/);
+            if (line.startsWith('#') || line.trim() === '') {
+                continue;
+            }
             //
-            if (parts.length === 0 || parts[0].startsWith('#')) continue;
+            const parts = line.trim().replace(/#.*/, '').split(/\s+/);
             //
             const values = parts.slice(1);
             //

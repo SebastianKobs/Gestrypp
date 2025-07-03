@@ -13,8 +13,10 @@ class ThreeDRenderer {
     height = 0;
     halfWidth = 0;
     halfHeight = 0;
+    accumulatedTime = 0;
     fps = 0;
-    step = 0;
+    steps = 0;
+
     //
     constructor(canvas) {
         const offscreen = canvas.transferControlToOffscreen();
@@ -33,7 +35,7 @@ class ThreeDRenderer {
     }
     //
     render(camera, meshes) {
-        console.time('render');
+        let start = performance.now();
         const viewMatrix = camera.getViewMatrix();
         const projectionMatrix = camera.getProjectionMatrix();
         const vpMatrix = viewMatrix.multiply(projectionMatrix);
@@ -52,7 +54,19 @@ class ThreeDRenderer {
         }
         //
         this.ctx.putImageData(this.backbuffer, 0, 0);
-        console.timeEnd('render');
+        let end = performance.now();
+        this.ctx.fillStyle = 'white';
+        this.ctx.font = '16px Arial';
+
+        this.accumulatedTime += end - start;
+        this.steps++;
+        if (this.accumulatedTime >= 1000) {
+            this.fps = 1000 / Math.round(this.accumulatedTime / this.steps);
+            this.accumulatedTime = 0;
+            this.steps = 0;
+        }
+
+        this.ctx.fillText(`FPS: ${this.fps}`, 10, 20);
     }
     //
     _drawMeshVertices(mesh, mvpMatrix) {
@@ -93,18 +107,20 @@ class ThreeDRenderer {
     }
     //
     _putPixel(p, color, skipDepthCheck = false) {
-        const pixelIndex = Math.floor(p.x) + Math.floor(p.y) * this.width;
+        const pixelIndex = ~~p.x + ~~p.y * this.width; // ~~ fast Math.floor
         const index = pixelIndex * 4;
         //
         if (!skipDepthCheck && this.depthBuffer[pixelIndex] !== undefined && this.depthBuffer[pixelIndex] > p.z) {
             return;
         }
         this.depthBuffer[pixelIndex] = p.z;
+        //
         this.backbuffer.data[index] = color.r;
         this.backbuffer.data[index + 1] = color.g;
         this.backbuffer.data[index + 2] = color.b;
         this.backbuffer.data[index + 3] = color.a * 255;
     }
+
     //
     _drawBrezenhamLine(p0, p1, color) {
         let x0 = p0.x >> 0;
@@ -129,7 +145,7 @@ class ThreeDRenderer {
             //
             const z = p0.z * (1 - factor) + p1.z * factor; // lerp
             //
-            this._putPixel(new Vector3(x0, y0, z), color, false);
+            this._putPixel(new Vector3(x0, y0, z), color);
             //
             if (x0 === x1 && y0 === y1) {
                 break;
@@ -155,38 +171,58 @@ class ThreeDRenderer {
         this._drawBrezenhamLine(B, C, color);
         this._drawBrezenhamLine(C, A, color);
     }
-    //
-    _rasterizeTri(A, B, C, color) {
-        const ABC = this._edgeFunction(A, B, C);
+    /**
+     * see https://fgiesen.wordpress.com/2013/02/10/optimizing-the-basic-rasterizer/
+     */
+    _rasterizeTri(v0, v1, v2, color) {
+        const area = this._edgeFunction(v0, v1, v2);
         //
-        if (ABC < 0) {
+        if (area < 0) {
             return;
         }
         //
-        const minX = Math.min(A.x, B.x, C.x);
-        const minY = Math.min(A.y, B.y, C.y);
-        const maxX = Math.max(A.x, B.x, C.x);
-        const maxY = Math.max(A.y, B.y, C.y);
+        const minX = Math.min(v0.x, v1.x, v2.x);
+        const minY = Math.min(v0.y, v1.y, v2.y);
+        const maxX = Math.max(v0.x, v1.x, v2.x);
+        const maxY = Math.max(v0.y, v1.y, v2.y);
         //
-        const P = new Vector3(0, 0, 0);
+        const p = new Vector3(minX, minY, 0);
         //
-        for (P.y = minY; P.y < maxY; P.y++) {
-            for (P.x = minX; P.x < maxX; P.x++) {
-                const ABP = this._edgeFunction(A, B, P);
-                const BCP = this._edgeFunction(B, C, P);
-                const CAP = this._edgeFunction(C, A, P);
-                //
-                if (ABP < 0 || BCP < 0 || CAP < 0) {
-                    continue;
+        let w0_row = this._edgeFunction(v1, v2, p);
+        let w1_row = this._edgeFunction(v2, v0, p);
+        let w2_row = this._edgeFunction(v0, v1, p);
+        //
+        const A01 = v0.y - v1.y;
+        const A12 = v1.y - v2.y;
+        const A20 = v2.y - v0.y;
+        //
+        const B01 = v1.x - v0.x;
+        const B12 = v2.x - v1.x;
+        const B20 = v0.x - v2.x;
+        //
+        for (p.y = minY; p.y <= maxY; p.y++) {
+            let w0 = w0_row;
+            let w1 = w1_row;
+            let w2 = w2_row;
+            //
+            for (p.x = minX; p.x <= maxX; p.x++) {
+                if ((w0 | w1 | w2) >= 0) {
+                    this._putPixel(p, color);
                 }
-                const weightA = BCP / ABC;
-                const weightB = CAP / ABC;
-                const weightC = ABP / ABC;
                 //
-                P.z = A.z * weightA + B.z * weightB + C.z * weightC;
+                const weightA = w0_row / area;
+                const weightB = w1_row / area;
+                const weightC = w2_row / area;
                 //
-                this._putPixel(P, color);
+                w0 += A12;
+                w1 += A20;
+                w2 += A01;
+                p.z = v0.z * weightA + v1.z * weightB + v2.z * weightC;
             }
+            //
+            w0_row += B12;
+            w1_row += B20;
+            w2_row += B01;
         }
     }
     //

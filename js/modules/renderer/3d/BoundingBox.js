@@ -23,6 +23,7 @@ class BoundingBox {
     getCenter() {
         return new Vector3((this.min.x + this.max.x) / 2, (this.min.y + this.max.y) / 2, (this.min.z + this.max.z) / 2);
     }
+    //
     getScale() {
         const xdistance = this.max.x - this.min.x;
         const ydistance = this.max.y - this.min.y;
@@ -33,6 +34,24 @@ class BoundingBox {
     scale(scalar) {
         this.min.multiplyScalar(scalar);
         this.max.multiplyScalar(scalar);
+        //
+        return this;
+    }
+    //
+    unity() {
+        const scale = this.getScale();
+        //
+        if (scale === 0) {
+            return this;
+        }
+        //
+        const center = this.getCenter();
+        //
+        this.min.subtract(center);
+        this.max.subtract(center);
+        //
+        this.min.divideScalar(scale);
+        this.max.divideScalar(scale);
         //
         return this;
     }

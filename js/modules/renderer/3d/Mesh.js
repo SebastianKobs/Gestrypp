@@ -44,7 +44,7 @@ class Mesh {
             vertex.divideScalar(scale);
         }
         //
-        this.boundingBox.scale(1 / scale);
+        this.boundingBox.unity();
         //
         return this;
     }

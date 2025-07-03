@@ -4,6 +4,15 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Document</title>
+        <style>
+            body {
+                margin: 0;
+                overflow: hidden;
+            }
+            canvas {
+                display: block;
+            }
+        </style>
     </head>
     <body>
         <canvas id="canvas" width="1280" height="800"></canvas>
@@ -18,7 +27,9 @@
             import { WavefrontObjParser } from './js/modules/renderer/3d/WavefrontObjParser.js';
             //
             const canvas = document.getElementById('canvas');
-            const position = new Vector3(0, 0, -20);
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            const position = new Vector3(0, 0, -40);
             const target = new Vector3(0, 0, 0);
             //
             const camera = new Camera(position, target, new Vector3(0, 1, 0), canvas.width / canvas.height);
@@ -29,7 +40,7 @@
             const obj = await response.text();
             //
             const suzanne = WavefrontObjParser.parse(obj);
-            suzanne.scale(4);
+            suzanne.scale(6);
             suzanne.position = new Vector3(0, 0, 0);
             suzanne.rotation.z = 180 * (Math.PI / 180); // Rotate to face the camera
 
@@ -38,7 +49,7 @@
             const renderer = new ThreeDRenderer(canvas);
             //
             const update = () => {
-                const step = performance.now() / 1000;
+                const step = performance.now() / 2000;
                 suzanne.color = new Color(255 * Math.sin(step), 255 * Math.cos(step), 128, 1);
                 suzanne.rotation.y += 0.01;
                 suzanne.rotation.x += 0.01;

@@ -7,7 +7,9 @@ import { unityCube } from '../../../modules/renderer/3d/testGeometry/unityCube.j
 test('WavefrontObjParser with Unity Cube obj', () => {
     const cubeObjFile = fs.readFileSync('js/modules/renderer/3d/testGeometry/cube.obj', 'utf8');
     const mesh = WavefrontObjParser.parse(cubeObjFile);
+    console.log(mesh);
     const uc = unityCube();
+    console.log(uc);
     expect(mesh).toStrictEqual(uc);
 });
 //
