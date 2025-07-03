@@ -23,6 +23,7 @@ class Color {
         //
         return `#${toHex(this.r)}${toHex(this.g)}${toHex(this.b)}`;
     }
+    //
     toString() {
         return `rgba(${this.r}, ${this.g}, ${this.b}, ${this.a})`;
     }

@@ -35,7 +35,7 @@ class Draggable {
             document.removeEventListener('touchmove', moveHandler);
             document.removeEventListener('touchend', upHandler);
         };
-
+        //
         document.addEventListener('mousemove', moveHandler);
         document.addEventListener('mouseup', upHandler);
         document.addEventListener('touchmove', moveHandler);

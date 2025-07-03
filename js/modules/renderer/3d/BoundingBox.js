@@ -31,6 +31,7 @@ class BoundingBox {
 
         return Math.max(xdistance, ydistance, zdistance);
     }
+    //
     scale(scalar) {
         this.min.multiplyScalar(scalar);
         this.max.multiplyScalar(scalar);

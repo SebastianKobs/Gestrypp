@@ -26,7 +26,6 @@ class LineRenderer {
         this.resizeCanvas();
     }
     //
-  
     render(gestrypp) {
         let lineWidth = 1;
         let strokeStyle = (this.currentBranchColor = this.strokeStyleBranch);
@@ -115,6 +114,7 @@ class LineRenderer {
         //
         return Math.min(alphaY, alphaX);
     }
+    //
     resizeCanvas() {
         this.ctx.canvas.width = document.getElementById('container').clientWidth;
         this.ctx.canvas.height = document.getElementById('container').clientHeight;

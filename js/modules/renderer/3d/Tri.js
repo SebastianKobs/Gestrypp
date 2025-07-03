@@ -14,7 +14,7 @@ class Tri {
         //
         this.color = color;
     }
-
+    //
     addNormals(n1, n2, n3) {
         this.n1 = n1;
         this.n2 = n2;

@@ -8,9 +8,11 @@ class Helper {
         const [r, g, b] = hex.match(/\w\w/g).map((x) => parseInt(x, 16));
         return new Color(r, g, b, alpha);
     }
+    //
     static ensureNumberFormat(value, defaultValue = 0) {
         return value.replace(/[^\d.,-]/g, '').replace(/,/g, '.') || defaultValue;
     }
+    //
     static clamp(value, min, max) {
         if (isNaN(min) || isNaN(max)) {
             console.warn('Invalid min or max value. check input element for min and max');

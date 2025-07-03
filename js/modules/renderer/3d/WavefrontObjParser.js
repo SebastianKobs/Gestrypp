@@ -68,6 +68,7 @@ class WavefrontObjParser {
                         hadErrors = true;
                         continue;
                     }
+                    //
                     tri = new Tri(...faces);
                     tri.addNormals(...normals);
                     mesh.addTri(tri);
