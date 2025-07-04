@@ -53,9 +53,15 @@ test('wavefrontObjParser Quads and Polygons', () => {
     //
     const expectedVertices = [new Vector3(0, 1, 2), new Vector3(2, 3, 4), new Vector3(5, 6, 7), new Vector3(8, 9, 10)];
     const expectedNormals = [new Vector3(0, 1, 2), new Vector3(2, 3, 4), new Vector3(5, 6, 7), new Vector3(8, 9, 10)];
-    const expectedTris = [new Tri(0, 1, 2).addNormals(0, 1, 2), new Tri(0, 2, 3).addNormals(0, 2, 3), new Tri(0, 3, 0).addNormals(0, 3, 0)];
+    const expectedUvs = [new Vector3(1, 1, 0), new Vector3(2, 2, 0), new Vector3(3, 3, 0), new Vector3(4, 4, 0)];
+    const expectedTris = [
+        new Tri(0, 1, 2).addNormals(0, 1, 2).addUVs(0, 1, 2),
+        new Tri(0, 2, 3).addNormals(0, 2, 3).addUVs(0, 2, 3),
+        new Tri(0, 3, 0).addNormals(0, 3, 0).addUVs(0, 3, 0),
+    ];
     //
     expect(mesh.tris).toEqual(expectedTris);
     expect(mesh.vertices).toEqual(expectedVertices);
     expect(mesh.normals).toEqual(expectedNormals);
+    expect(mesh.uvCoordinate).toEqual(expectedUvs);
 });

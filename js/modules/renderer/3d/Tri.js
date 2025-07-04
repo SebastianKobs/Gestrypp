@@ -12,6 +12,10 @@ class Tri {
         this.n2 = null;
         this.n3 = null;
         //
+        this.uv1 = null;
+        this.uv2 = null;
+        this.uv3 = null;
+        //
         this.color = color;
     }
     //
@@ -19,6 +23,13 @@ class Tri {
         this.n1 = n1;
         this.n2 = n2;
         this.n3 = n3;
+        //
+        return this;
+    }
+    addUVs(uv1, uv2, uv3) {
+        this.uv1 = uv1;
+        this.uv2 = uv2;
+        this.uv3 = uv3;
         //
         return this;
     }

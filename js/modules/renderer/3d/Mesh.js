@@ -4,6 +4,7 @@ import { Matrix4 } from '../../math/Matrix4.js';
 import { Vector3 } from '../../math/Vector3.js';
 import { Color } from '../../utils/Color.js';
 import { BoundingBox } from './BoundingBox.js';
+import { Texture } from './Texture.js';
 export { Mesh };
 
 class Mesh {
@@ -12,7 +13,9 @@ class Mesh {
     vertices = [];
     tris = [];
     normals = [];
+    uvCoordinate = [];
     color = new Color(255, 255, 255);
+    texture = null;
     //
     boundingBox = new BoundingBox();
     //
@@ -41,6 +44,11 @@ class Mesh {
         //
         return this;
     }
+    addUv(uv) {
+        this.uvCoordinate.push(uv);
+        //
+        return this;
+    }
     //
     unity() {
         const center = this.boundingBox.getCenter();
@@ -50,6 +58,7 @@ class Mesh {
             vertex.subtract(center);
             vertex.divideScalar(scale);
         }
+
         //
         this.boundingBox.unity();
         //
@@ -60,6 +69,7 @@ class Mesh {
         for (const vertex of this.vertices) {
             vertex.multiplyScalar(scalar);
         }
+
         //
         this.boundingBox.scale(scalar);
         //
@@ -80,5 +90,9 @@ class Mesh {
     //
     hasFaces() {
         return this.tris.length > 0;
+    }
+    //
+    addTextureFromSrc(src) {
+        this.texture = new Texture(src);
     }
 }

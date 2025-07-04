@@ -40,15 +40,17 @@
 
             const obj = await response.text();
             //
-            const suzanne = WavefrontObjParser.parse(obj);
+            const homer = WavefrontObjParser.parse(obj);
             //
-            suzanne.scale(2);
-            suzanne.color = new Color(0, 167, 200, 1);
+            homer.scale(2);
+            homer.color = new Color(0, 167, 200, 1);
+            //
+            homer.position = new Vector3(0, 0, 0);
+            homer.rotation.z = (180 * Math.PI) / 180; // Rotate around X-axis
 
-            suzanne.position = new Vector3(0, 0, 0);
-            suzanne.rotation.z = 180 * (Math.PI / 180);
             //
-            meshes.push(suzanne);
+            homer.addTextureFromSrc('/Gestrypp/testGeometry/texture_homer.jpg');
+            meshes.push(homer);
             //
             const renderer = new ThreeDRenderer(canvas);
             //
@@ -59,13 +61,21 @@
             //
             document.addEventListener('keydown', (event) => {
                 if (event.key === 'ArrowUp') {
-                    suzanne.rotation.x += 0.1;
+                    homer.rotation.x += 0.1;
                 } else if (event.key === 'ArrowDown') {
-                    suzanne.rotation.x -= 0.1;
+                    homer.rotation.x -= 0.1;
                 } else if (event.key === 'ArrowLeft') {
-                    suzanne.rotation.y -= 0.1;
+                    homer.rotation.y -= 0.1;
                 } else if (event.key === 'ArrowRight') {
-                    suzanne.rotation.y += 0.1;
+                    homer.rotation.y += 0.1;
+                } else if (event.key === 'w') {
+                    camera.position.z += 1;
+                } else if (event.key === 's') {
+                    camera.position.z -= 1;
+                } else if (event.key === 'a') {
+                    camera.position.x -= 0.1;
+                } else if (event.key === 'd') {
+                    camera.position.x += 0.1;
                 }
             });
             requestAnimationFrame(update);

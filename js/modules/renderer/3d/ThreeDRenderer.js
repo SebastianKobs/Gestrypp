@@ -89,25 +89,32 @@ class ThreeDRenderer {
             const n2 = mesh.normals[tri.n2];
             const n3 = mesh.normals[tri.n3];
             //
+            const uv1 = mesh.uvCoordinate[tri.uv1];
+            const uv2 = mesh.uvCoordinate[tri.uv2];
+            const uv3 = mesh.uvCoordinate[tri.uv3];
+            //
             const pixelA = {
                 pixel: this._convertToScreenCoordinates(vertexA.transformCoordinate(mvpMatrix)),
                 normal: n1.transformCoordinate(worldMatrix),
                 world: vertexA.transformCoordinate(worldMatrix),
+                uv: uv1,
             };
             //
             const pixelB = {
                 pixel: this._convertToScreenCoordinates(vertexB.transformCoordinate(mvpMatrix)),
                 normal: n2.transformCoordinate(worldMatrix),
                 world: vertexB.transformCoordinate(worldMatrix),
+                uv: uv2,
             };
             //
             const pixelC = {
                 pixel: this._convertToScreenCoordinates(vertexC.transformCoordinate(mvpMatrix)),
                 normal: n3.transformCoordinate(worldMatrix),
                 world: vertexC.transformCoordinate(worldMatrix),
+                uv: uv3,
             };
             //
-            this._rasterizeTri(pixelA, pixelB, pixelC, mesh.color);
+            this._rasterizeTri(pixelA, pixelB, pixelC, mesh);
             //this._wireframeTri(pixelA, pixelB, pixelC, new Color(255, 255, 255, 1));
         }
     }
@@ -200,7 +207,7 @@ class ThreeDRenderer {
     /**
      * see https://fgiesen.wordpress.com/2013/02/10/optimizing-the-basic-rasterizer/
      */
-    _rasterizeTri(A, B, C, color) {
+    _rasterizeTri(A, B, C, mesh) {
         const v0 = A.pixel;
         const v1 = B.pixel;
         const v2 = C.pixel;
@@ -239,9 +246,13 @@ class ThreeDRenderer {
         const nDotLB = this._computeNDotL(B.world, B.normal, this.lightPos);
         const nDotLC = this._computeNDotL(C.world, C.normal, this.lightPos);
         //
-        const colorA = new Color(color.r * nDotLA, color.g * nDotLA, color.b * nDotLA, color.a);
-        const colorB = new Color(color.r * nDotLB, color.g * nDotLB, color.b * nDotLB, color.a);
-        const colorC = new Color(color.r * nDotLC, color.g * nDotLC, color.b * nDotLC, color.a);
+        const uvA = mesh.texture._mapUVToTexture(A.uv);
+        const uvB = mesh.texture._mapUVToTexture(B.uv);
+        const uvC = mesh.texture._mapUVToTexture(C.uv);
+        //console.log(`UV A: ${uvA}, UV B: ${uvB}, UV C: ${uvC}`);
+        const colorA = new Color(uvA.r * nDotLA, uvA.g * nDotLA, uvA.b * nDotLA);
+        const colorB = new Color(uvB.r * nDotLB, uvB.g * nDotLB, uvB.b * nDotLB);
+        const colorC = new Color(uvC.r * nDotLC, uvC.g * nDotLC, uvC.b * nDotLC);
         //
         for (p.y = minY; p.y <= maxY; p.y++) {
             let w0 = w0_row;
@@ -259,7 +270,7 @@ class ThreeDRenderer {
                     const g = weightA * colorA.g + weightB * colorB.g + weightC * colorC.g;
                     const b = weightA * colorA.b + weightB * colorB.b + weightC * colorC.b;
                     //
-                    const colorShaded = new Color(r, g, b, color.a);
+                    const colorShaded = new Color(r, g, b, 1);
                     //
                     p.z = v0.z * weightA + v1.z * weightB + v2.z * weightC;
                     //
