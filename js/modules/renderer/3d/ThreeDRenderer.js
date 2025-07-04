@@ -16,7 +16,7 @@ class ThreeDRenderer {
     accumulatedTime = 0;
     fps = 0;
     steps = 0;
-    lightPos = new Vector3(20, 50, -40);
+    lightPos = new Vector3(20, 40, -20);
     //
     constructor(canvas) {
         const offscreen = canvas.transferControlToOffscreen();
@@ -161,6 +161,9 @@ class ThreeDRenderer {
         //
         while (true) {
             //
+            if (x0 < 0 || x0 >= this.width || y0 < 0 || y0 >= this.height) {
+                break;
+            }
             const factor = steps === 0 ? 0 : step / steps;
             //
             const z = p0.z * (1 - factor) + p1.z * factor; // lerp
@@ -212,11 +215,12 @@ class ThreeDRenderer {
             return;
         }
         //
-        const minX = ~~Math.min(v0.x, v1.x, v2.x);
-        const minY = ~~Math.min(v0.y, v1.y, v2.y);
-        const maxX = ~~Math.max(v0.x, v1.x, v2.x);
-        const maxY = ~~Math.max(v0.y, v1.y, v2.y);
+        const minX = Math.max(~~Math.min(v0.x, v1.x, v2.x), 0);
+        const minY = Math.max(~~Math.min(v0.y, v1.y, v2.y), 0);
+        const maxX = Math.min(~~Math.max(v0.x, v1.x, v2.x), this.width - 1);
+        const maxY = Math.min(~~Math.max(v0.y, v1.y, v2.y), this.height - 1);
         //
+
         const p = new Vector3(minX, minY, 0);
         //
         let w0_row = this._edgeFunction(v1, v2, p);
@@ -254,6 +258,7 @@ class ThreeDRenderer {
                     const r = weightA * colorA.r + weightB * colorB.r + weightC * colorC.r;
                     const g = weightA * colorA.g + weightB * colorB.g + weightC * colorC.g;
                     const b = weightA * colorA.b + weightB * colorB.b + weightC * colorC.b;
+                    //
                     const colorShaded = new Color(r, g, b, color.a);
                     //
                     p.z = v0.z * weightA + v1.z * weightB + v2.z * weightC;
