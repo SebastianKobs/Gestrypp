@@ -2,7 +2,7 @@ import { expect, test } from 'vitest';
 import { Mesh } from '../../../modules/renderer/3d/Mesh.js';
 import { Vector3 } from '../../../modules/math/Vector3.js';
 import { Matrix4 } from '../../../modules/math/Matrix4.js';
-import { unityCube } from '../../../modules/renderer/3d/testGeometry/unityCube';
+import { unityCube } from './geometry/unityCube.js';
 
 test('Mesh getWorldMatrix', () => {
     const position = new Vector3(0, 0, 0);

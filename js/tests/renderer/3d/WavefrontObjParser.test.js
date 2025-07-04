@@ -2,10 +2,12 @@ import { expect, test, vi, afterEach } from 'vitest';
 import fs from 'node:fs';
 
 import { WavefrontObjParser } from '../../../modules/renderer/3d/WavefrontObjParser.js';
-import { unityCube } from '../../../modules/renderer/3d/testGeometry/unityCube.js';
+import { unityCube } from './geometry/unityCube.js';
+import { Vector3 } from '../../../modules/math/Vector3.js';
+import { Tri } from '../../../modules/renderer/3d/Tri.js';
 
 test('WavefrontObjParser with Unity Cube obj', () => {
-    const cubeObjFile = fs.readFileSync('js/modules/renderer/3d/testGeometry/cube.obj', 'utf8');
+    const cubeObjFile = fs.readFileSync('js/tests/renderer/3d/geometry/cube.obj', 'utf8');
     const mesh = WavefrontObjParser.parse(cubeObjFile);
     //
     const uc = unityCube();
@@ -43,4 +45,17 @@ test('WavefrontObjParser format Warnings', () => {
     WavefrontObjParser.parse(nonNumericFaceIndexObj);
     //
     expect(consoleMock).toHaveBeenLastCalledWith(`Invalid face on line: ${nonNumericFaceIndexObj}`);
+});
+
+test('wavefrontObjParser Quads and Polygons', () => {
+    const cubeObjFile = fs.readFileSync('js/tests/renderer/3d/geometry/quadtest.obj', 'utf8');
+    const mesh = WavefrontObjParser.parse(cubeObjFile, false);
+    //
+    const expectedVertices = [new Vector3(0, 1, 2), new Vector3(2, 3, 4), new Vector3(5, 6, 7), new Vector3(8, 9, 10)];
+    const expectedNormals = [new Vector3(0, 1, 2), new Vector3(2, 3, 4), new Vector3(5, 6, 7), new Vector3(8, 9, 10)];
+    const expectedTris = [new Tri(0, 1, 2).addNormals(0, 1, 2), new Tri(0, 2, 3).addNormals(0, 2, 3), new Tri(0, 3, 0).addNormals(0, 3, 0)];
+    //
+    expect(mesh.tris).toEqual(expectedTris);
+    expect(mesh.vertices).toEqual(expectedVertices);
+    expect(mesh.normals).toEqual(expectedNormals);
 });

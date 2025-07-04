@@ -6,8 +6,9 @@ import { Mesh } from './Mesh.js';
 import { Tri } from './Tri.js';
 import { Vector3 } from '../../math/Vector3.js';
 
+/** TODO: handle files without normals */
 class WavefrontObjParser {
-    static parse(objString) {
+    static parse(objString, unity = true) {
         const lines = objString.split('\n');
         //
         const mesh = new Mesh();
@@ -69,14 +70,25 @@ class WavefrontObjParser {
                         continue;
                     }
                     //
-                    tri = new Tri(...faces);
-                    tri.addNormals(...normals);
-                    mesh.addTri(tri);
+                    if (faces.length === 3) {
+                        tri = new Tri(...faces);
+                        tri.addNormals(...normals);
+                        mesh.addTri(tri);
+                    } else {
+                        // TIL: QUADS or POLYGONS are a thing in obj files
+                        for (let i = 1; i < faces.length - 1; i++) {
+                            tri = new Tri(faces[0], faces[i], faces[i + 1]);
+                            tri.addNormals(normals[0], normals[i], normals[i + 1]);
+                            mesh.addTri(tri);
+                        }
+                    }
                     break;
             }
         }
         //
-        mesh.unity();
+        if (unity) {
+            mesh.unity();
+        }
         return !hadErrors ? mesh : new Mesh();
     }
 }

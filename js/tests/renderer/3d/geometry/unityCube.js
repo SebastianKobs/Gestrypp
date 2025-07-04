@@ -2,9 +2,9 @@
 
 export { unityCube };
 
-import { Vector3 } from '../../../math/Vector3.js';
-import { Mesh } from '../Mesh.js';
-import { Tri } from '../Tri.js';
+import { Vector3 } from '../../../../modules/math/Vector3.js';
+import { Mesh } from '../../../../modules/renderer/3d/Mesh.js';
+import { Tri } from '../../../../modules/renderer/3d/Tri.js';
 
 const unityCube = function () {
     const cube = new Mesh();
