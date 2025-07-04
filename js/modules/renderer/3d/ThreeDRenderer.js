@@ -8,6 +8,7 @@ import { Color } from '../../utils/Color.js';
 class ThreeDRenderer {
     ctx = null;
     backbuffer = null;
+    backbufferData = null;
     depthBuffer = null;
     width = 0;
     height = 0;
@@ -30,8 +31,9 @@ class ThreeDRenderer {
     clear() {
         this.ctx.fillStyle = 'black';
         this.ctx.fillRect(0, 0, this.width, this.height);
-        this.depthBuffer = [];
+        this.depthBuffer = new Float32Array(this.width * this.height);
         this.backbuffer = this.ctx.getImageData(0, 0, this.width, this.height);
+        this.backbufferData = this.backbuffer.data;
     }
     //
     render(camera, meshes) {
@@ -136,17 +138,17 @@ class ThreeDRenderer {
     //
     _putPixel(p, color, skipDepthCheck = false) {
         const pixelIndex = ~~p.x + ~~p.y * this.width; // ~~ fast Math.floor
-        const index = pixelIndex * 4;
+        const index = pixelIndex << 2;
         //
-        if (!skipDepthCheck && this.depthBuffer[pixelIndex] !== undefined && this.depthBuffer[pixelIndex] > p.z) {
+        if (!skipDepthCheck && this.depthBuffer[pixelIndex] !== 0 && this.depthBuffer[pixelIndex] > p.z) {
             return;
         }
         this.depthBuffer[pixelIndex] = p.z;
         //
-        this.backbuffer.data[index] = color.r;
-        this.backbuffer.data[index + 1] = color.g;
-        this.backbuffer.data[index + 2] = color.b;
-        this.backbuffer.data[index + 3] = color.a * 255;
+        this.backbufferData[index] = color.r;
+        this.backbufferData[index + 1] = color.g;
+        this.backbufferData[index + 2] = color.b;
+        this.backbufferData[index + 3] = color.a * 255;
     }
     //
     _drawBrezenhamLine(p0, p1, color) {
@@ -227,7 +229,6 @@ class ThreeDRenderer {
         const maxX = Math.min(~~Math.max(v0.x, v1.x, v2.x), this.width - 1);
         const maxY = Math.min(~~Math.max(v0.y, v1.y, v2.y), this.height - 1);
         //
-
         const p = new Vector3(minX, minY, 0);
         //
         let w0_row = this._edgeFunction(v1, v2, p);
