@@ -42,7 +42,7 @@
             const suzanne = WavefrontObjParser.parse(obj);
             //
             suzanne.color = new Color(0, 167, 200, 1);
-            //suzanne.scale(6);
+            suzanne.scale(2);
             suzanne.position = new Vector3(0, 0, 0);
             suzanne.rotation.z = 180 * (Math.PI / 180);
             //
@@ -53,12 +53,23 @@
             const update = () => {
                 const step = performance.now() / 2000;
                 //suzanne.color = new Color(255 * Math.sin(step), 255 * Math.cos(step), 128, 1);
-                suzanne.rotation.y += 0.01;
-                suzanne.rotation.x += 0.01;
+                //suzanne.rotation.y += 0.01;
+                //suzanne.rotation.x += 0.01;
                 renderer.render(camera, meshes);
                 requestAnimationFrame(update);
             };
             //
+            document.addEventListener('keydown', (event) => {
+                if (event.key === 'ArrowUp') {
+                    suzanne.rotation.x += 0.1;
+                } else if (event.key === 'ArrowDown') {
+                    suzanne.rotation.x -= 0.1;
+                } else if (event.key === 'ArrowLeft') {
+                    suzanne.rotation.y -= 0.1;
+                } else if (event.key === 'ArrowRight') {
+                    suzanne.rotation.y += 0.1;
+                }
+            });
             requestAnimationFrame(update);
         </script>
     </body>

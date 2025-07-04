@@ -16,7 +16,7 @@ class ThreeDRenderer {
     accumulatedTime = 0;
     fps = 0;
     steps = 0;
-    lightPos = new Vector3(0, 60, -40);
+    lightPos = new Vector3(20, 50, -40);
     //
     constructor(canvas) {
         const offscreen = canvas.transferControlToOffscreen();
@@ -85,21 +85,25 @@ class ThreeDRenderer {
             const vertexB = mesh.vertices[tri.v2];
             const vertexC = mesh.vertices[tri.v3];
             //
+            const n1 = mesh.normals[tri.n1];
+            const n2 = mesh.normals[tri.n2];
+            const n3 = mesh.normals[tri.n3];
+            //
             const pixelA = {
                 pixel: this._convertToScreenCoordinates(vertexA.transformCoordinate(mvpMatrix)),
-                normal: mesh.normals[tri.n1].transformCoordinate(worldMatrix),
+                normal: n1.transformCoordinate(worldMatrix),
                 world: vertexA.transformCoordinate(worldMatrix),
             };
             //
             const pixelB = {
                 pixel: this._convertToScreenCoordinates(vertexB.transformCoordinate(mvpMatrix)),
-                normal: mesh.normals[tri.n2].transformCoordinate(worldMatrix),
+                normal: n2.transformCoordinate(worldMatrix),
                 world: vertexB.transformCoordinate(worldMatrix),
             };
             //
             const pixelC = {
                 pixel: this._convertToScreenCoordinates(vertexC.transformCoordinate(mvpMatrix)),
-                normal: mesh.normals[tri.n3].transformCoordinate(worldMatrix),
+                normal: n3.transformCoordinate(worldMatrix),
                 world: vertexC.transformCoordinate(worldMatrix),
             };
             //
@@ -198,6 +202,10 @@ class ThreeDRenderer {
         const v1 = B.pixel;
         const v2 = C.pixel;
         //
+        if ((A.normal.z | B.normal.z | C.normal.z) < 0) {
+            return;
+        }
+        //
         const area = this._edgeFunction(v0, v1, v2);
         //
         if (area < 0) {
@@ -235,25 +243,27 @@ class ThreeDRenderer {
             let w0 = w0_row;
             let w1 = w1_row;
             let w2 = w2_row;
-            //
             for (p.x = minX; p.x <= maxX; p.x++) {
-                const weightA = w0_row / area;
-                const weightB = w1_row / area;
-                const weightC = w2_row / area;
+                //
                 if ((w0 | w1 | w2) >= 0) {
+                    //
+                    const weightA = w0 / area;
+                    const weightB = w1 / area;
+                    const weightC = w2 / area;
                     //
                     const r = weightA * colorA.r + weightB * colorB.r + weightC * colorC.r;
                     const g = weightA * colorA.g + weightB * colorB.g + weightC * colorC.g;
                     const b = weightA * colorA.b + weightB * colorB.b + weightC * colorC.b;
                     const colorShaded = new Color(r, g, b, color.a);
+                    //
+                    p.z = v0.z * weightA + v1.z * weightB + v2.z * weightC;
+                    //
                     this._putPixel(p, colorShaded);
                 }
                 //
                 w0 += A12;
                 w1 += A20;
                 w2 += A01;
-                //
-                p.z = v0.z * weightA + v1.z * weightB + v2.z * weightC;
             }
             //
             w0_row += B12;
@@ -264,14 +274,14 @@ class ThreeDRenderer {
     //
     _computeNDotL = function (vertex, normal, lightPosition) {
         const lightDirection = vertex.subtract(lightPosition);
-
+        //
         normal.normalize();
         lightDirection.normalize();
-
+        //
         return Math.max(0, normal.dot(lightDirection));
     };
     //
     _edgeFunction(a, b, c) {
-        return (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x);
+        return (a.y - b.y) * c.x + (b.x - a.x) * c.y + (a.x * b.y - a.y * b.x);
     }
 }
