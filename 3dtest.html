@@ -36,7 +36,8 @@
             //
             const meshes = [];
             //
-            const response = await fetch('js/modules/renderer/3d/testGeometry/suzanne.obj');
+            const response = await fetch('/Gestrypp/testGeometry/suzanne.obj');
+
             const obj = await response.text();
             //
             const suzanne = WavefrontObjParser.parse(obj);
