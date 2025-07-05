@@ -4,39 +4,46 @@ export { unityCube };
 
 import { Vector3 } from '../../../../modules/math/Vector3.js';
 import { Mesh } from '../../../../modules/renderer/3d/Mesh.js';
-import { Tri } from '../../../../modules/renderer/3d/Tri.js';
+import { Face } from '../../../../modules/renderer/3d/Face.js';
 
 const unityCube = function () {
     const cube = new Mesh();
     //
-    cube.addVertex(new Vector3(-0.5, -0.5, -0.5));
-    cube.addVertex(new Vector3(-0.5, 0.5, -0.5));
-    cube.addVertex(new Vector3(0.5, 0.5, -0.5));
-    cube.addVertex(new Vector3(0.5, -0.5, -0.5));
-    cube.addVertex(new Vector3(-0.5, -0.5, 0.5));
-    cube.addVertex(new Vector3(-0.5, 0.5, 0.5));
-    cube.addVertex(new Vector3(0.5, 0.5, 0.5));
-    cube.addVertex(new Vector3(0.5, -0.5, 0.5));
+    const vertices = [
+        new Vector3(-0.5, -0.5, -0.5),
+        new Vector3(-0.5, 0.5, -0.5),
+        new Vector3(0.5, 0.5, -0.5),
+        new Vector3(0.5, -0.5, -0.5),
+        new Vector3(-0.5, -0.5, 0.5),
+        new Vector3(-0.5, 0.5, 0.5),
+        new Vector3(0.5, 0.5, 0.5),
+        new Vector3(0.5, -0.5, 0.5),
+    ];
     //
-    cube.addTri(new Tri(2, 6, 7).addNormals(0, 0, 0));
-    cube.addTri(new Tri(2, 7, 3).addNormals(0, 0, 0));
-    cube.addTri(new Tri(0, 4, 5).addNormals(1, 1, 1));
-    cube.addTri(new Tri(0, 5, 1).addNormals(1, 1, 1));
-    cube.addTri(new Tri(6, 2, 1).addNormals(2, 2, 2));
-    cube.addTri(new Tri(6, 1, 5).addNormals(2, 2, 2));
-    cube.addTri(new Tri(3, 7, 4).addNormals(3, 3, 3));
-    cube.addTri(new Tri(3, 4, 0).addNormals(3, 3, 3));
-    cube.addTri(new Tri(7, 6, 5).addNormals(4, 4, 4));
-    cube.addTri(new Tri(7, 5, 4).addNormals(4, 4, 4));
-    cube.addTri(new Tri(2, 3, 0).addNormals(5, 5, 5));
-    cube.addTri(new Tri(2, 0, 1).addNormals(5, 5, 5));
-
-    cube.addNormal(new Vector3(1, 0, 0));
-    cube.addNormal(new Vector3(-1, 0, 0));
-    cube.addNormal(new Vector3(0, 1, 0));
-    cube.addNormal(new Vector3(0, -1, 0));
-    cube.addNormal(new Vector3(0, 0, 1));
-    cube.addNormal(new Vector3(0, 0, -1));
+    const normals = [
+        new Vector3(1, 0, 0),
+        new Vector3(-1, 0, 0),
+        new Vector3(0, 1, 0),
+        new Vector3(0, -1, 0),
+        new Vector3(0, 0, 1),
+        new Vector3(0, 0, -1),
+    ];
+    for (const vertex of vertices) {
+        cube.updateBoundingBox(vertex);
+    }
+    //
+    cube.addFace(new Face(vertices[2], vertices[6], vertices[7]).addNormals(normals[0], normals[0], normals[0]));
+    cube.addFace(new Face(vertices[2], vertices[7], vertices[3]).addNormals(normals[0], normals[0], normals[0]));
+    cube.addFace(new Face(vertices[0], vertices[4], vertices[5]).addNormals(normals[1], normals[1], normals[1]));
+    cube.addFace(new Face(vertices[0], vertices[5], vertices[1]).addNormals(normals[1], normals[1], normals[1]));
+    cube.addFace(new Face(vertices[6], vertices[2], vertices[1]).addNormals(normals[2], normals[2], normals[2]));
+    cube.addFace(new Face(vertices[6], vertices[1], vertices[5]).addNormals(normals[2], normals[2], normals[2]));
+    cube.addFace(new Face(vertices[3], vertices[7], vertices[4]).addNormals(normals[3], normals[3], normals[3]));
+    cube.addFace(new Face(vertices[3], vertices[4], vertices[0]).addNormals(normals[3], normals[3], normals[3]));
+    cube.addFace(new Face(vertices[7], vertices[6], vertices[5]).addNormals(normals[4], normals[4], normals[4]));
+    cube.addFace(new Face(vertices[7], vertices[5], vertices[4]).addNormals(normals[4], normals[4], normals[4]));
+    cube.addFace(new Face(vertices[2], vertices[3], vertices[0]).addNormals(normals[5], normals[5], normals[5]));
+    cube.addFace(new Face(vertices[2], vertices[0], vertices[1]).addNormals(normals[5], normals[5], normals[5]));
     //
     return cube;
 };

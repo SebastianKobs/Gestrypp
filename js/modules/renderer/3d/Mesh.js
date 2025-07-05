@@ -10,10 +10,8 @@ export { Mesh };
 class Mesh {
     position = new Vector3(0, 0, 0);
     rotation = new Vector3(0, 0, 0);
-    vertices = [];
-    tris = [];
-    normals = [];
-    uvCoordinate = [];
+    //
+    faces = [];
     color = new Color(255, 255, 255);
     texture = null;
     //
@@ -25,27 +23,14 @@ class Mesh {
         this.vertices = vertices;
     }
     //
-    addVertex(vertex) {
-        this.vertices.push(vertex);
-        //
+    updateBoundingBox(vertex) {
         this.boundingBox.update(vertex);
         //
         return this;
     }
     //
-    addNormal(normal) {
-        this.normals.push(normal);
-        //
-        return this;
-    }
-    //
-    addTri(tri) {
-        this.tris.push(tri);
-        //
-        return this;
-    }
-    addUv(uv) {
-        this.uvCoordinate.push(uv);
+    addFace(face) {
+        this.faces.push(face);
         //
         return this;
     }
@@ -54,11 +39,9 @@ class Mesh {
         const center = this.boundingBox.getCenter();
         const scale = this.boundingBox.getScale();
         //
-        for (const vertex of this.vertices) {
-            vertex.subtract(center);
-            vertex.divideScalar(scale);
+        for (const face of this.faces) {
+            face.unity(center, scale);
         }
-
         //
         this.boundingBox.unity();
         //
@@ -66,10 +49,9 @@ class Mesh {
     }
     //
     scale(scalar) {
-        for (const vertex of this.vertices) {
-            vertex.multiplyScalar(scalar);
+        for (const face of this.faces) {
+            face.scale(scalar);
         }
-
         //
         this.boundingBox.scale(scalar);
         //
@@ -89,10 +71,15 @@ class Mesh {
     }
     //
     hasFaces() {
-        return this.tris.length > 0;
+        return this.faces.length > 0;
     }
     //
     addTextureFromSrc(src) {
-        this.texture = new Texture(src);
+        this.texture = new Texture(src, this._onTextureLoaded.bind(this));
+    }
+    _onTextureLoaded() {
+        for (const face of this.faces) {
+            face.addUVColors(this.texture);
+        }
     }
 }

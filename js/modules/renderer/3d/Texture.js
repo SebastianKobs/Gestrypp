@@ -1,27 +1,32 @@
 'use strict';
 
 export { Texture };
-
 import { Color } from '../../utils/Color.js';
 class Texture {
-    constructor(src) {
+    constructor(src, callback) {
         this.src = src;
         this.textureBuffer = null;
         //
-        this._loadTexture();
+        this._loadTexture(callback);
     }
     //
-    _loadTexture() {
+    _loadTexture(callback) {
         const image = new Image();
         image.src = this.src;
+
+        const _callback =
+            callback ||
+            (() => {
+                console.log(`Texture loaded: ${this.src}`);
+            });
         image.onload = () => {
-            console.log(`Texture loaded: ${this.src}`);
             const textureCanvas = document.createElement('canvas');
             textureCanvas.width = image.width;
             textureCanvas.height = image.height;
             const ctx = textureCanvas.getContext('2d');
             ctx.drawImage(image, 0, 0);
             this.textureBuffer = ctx.getImageData(0, 0, image.width, image.height);
+            _callback();
         };
         image.onerror = (error) => {
             console.error(`Error loading texture: ${this.src}`, error);
@@ -34,7 +39,6 @@ class Texture {
             return new Color(255, 0, 255, 1); // Return a default color if texture is not loaded
         }
         //
-
         const u = ~~(uv.x * (this.textureBuffer.width - 1));
         const v = ~~(uv.y * (this.textureBuffer.height - 1));
         //

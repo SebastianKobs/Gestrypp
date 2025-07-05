@@ -26,14 +26,14 @@ class ThreeDRenderer {
         this.height = canvas.height;
         this.halfWidth = this.width / 2.0;
         this.halfHeight = this.height / 2.0;
-    }
-    //
-    clear() {
-        this.ctx.fillStyle = 'black';
-        this.ctx.fillRect(0, 0, this.width, this.height);
         this.depthBuffer = new Float32Array(this.width * this.height);
         this.backbuffer = this.ctx.getImageData(0, 0, this.width, this.height);
         this.backbufferData = this.backbuffer.data;
+    }
+    //
+    clear() {
+        this.depthBuffer.fill(0);
+        this.backbuffer.data.fill(0);
     }
     //
     render(camera, meshes) {
@@ -50,7 +50,7 @@ class ThreeDRenderer {
             const mvpMatrix = worldMatrix.multiply(vpMatrix);
             //
             if (mesh.hasFaces()) {
-                this._drawMeshTris(mesh, mvpMatrix, worldMatrix);
+                this._drawMeshFaces(mesh, mvpMatrix, worldMatrix);
             } else {
                 this._drawMeshVertices(mesh, mvpMatrix);
             }
@@ -81,43 +81,31 @@ class ThreeDRenderer {
         }
     }
     //
-    _drawMeshTris(mesh, mvpMatrix, worldMatrix) {
-        for (const tri of mesh.tris) {
-            const vertexA = mesh.vertices[tri.v1];
-            const vertexB = mesh.vertices[tri.v2];
-            const vertexC = mesh.vertices[tri.v3];
-            //
-            const n1 = mesh.normals[tri.n1];
-            const n2 = mesh.normals[tri.n2];
-            const n3 = mesh.normals[tri.n3];
-            //
-            const uv1 = mesh.uvCoordinate[tri.uv1];
-            const uv2 = mesh.uvCoordinate[tri.uv2];
-            const uv3 = mesh.uvCoordinate[tri.uv3];
-            //
+    _drawMeshFaces(mesh, mvpMatrix, worldMatrix) {
+        for (const face of mesh.faces) {
             const pixelA = {
-                pixel: this._convertToScreenCoordinates(vertexA.transformCoordinate(mvpMatrix)),
-                normal: n1.transformCoordinate(worldMatrix),
-                world: vertexA.transformCoordinate(worldMatrix),
-                uv: uv1,
+                pixel: this._convertToScreenCoordinates(face.v1.transformCoordinate(mvpMatrix)),
+                normal: face.n1.transformCoordinate(worldMatrix),
+                world: face.v1.transformCoordinate(worldMatrix),
+                uv: face.uv1Color,
             };
             //
             const pixelB = {
-                pixel: this._convertToScreenCoordinates(vertexB.transformCoordinate(mvpMatrix)),
-                normal: n2.transformCoordinate(worldMatrix),
-                world: vertexB.transformCoordinate(worldMatrix),
-                uv: uv2,
+                pixel: this._convertToScreenCoordinates(face.v2.transformCoordinate(mvpMatrix)),
+                normal: face.n2.transformCoordinate(worldMatrix),
+                world: face.v2.transformCoordinate(worldMatrix),
+                uv: face.uv2Color,
             };
             //
             const pixelC = {
-                pixel: this._convertToScreenCoordinates(vertexC.transformCoordinate(mvpMatrix)),
-                normal: n3.transformCoordinate(worldMatrix),
-                world: vertexC.transformCoordinate(worldMatrix),
-                uv: uv3,
+                pixel: this._convertToScreenCoordinates(face.v3.transformCoordinate(mvpMatrix)),
+                normal: face.n3.transformCoordinate(worldMatrix),
+                world: face.v3.transformCoordinate(worldMatrix),
+                uv: face.uv2Color,
             };
             //
-            this._rasterizeTri(pixelA, pixelB, pixelC, mesh);
-            //this._wireframeTri(pixelA, pixelB, pixelC, new Color(255, 255, 255, 1));
+            this._rasterizeFace(pixelA, pixelB, pixelC, mesh);
+            //this._wireframeFace(pixelA, pixelB, pixelC, new Color(255, 255, 255, 1));
         }
     }
     //
@@ -198,10 +186,11 @@ class ThreeDRenderer {
         }
     }
     //
-    _wireframeTri(A, B, C, color) {
+    _wireframeFace(A, B, C, color) {
         const pA = A.pixel;
         const pB = B.pixel;
         const pC = C.pixel;
+        //
         this._drawBrezenhamLine(pA, pB, color);
         this._drawBrezenhamLine(pB, pC, color);
         this._drawBrezenhamLine(pC, pA, color);
@@ -209,7 +198,7 @@ class ThreeDRenderer {
     /**
      * see https://fgiesen.wordpress.com/2013/02/10/optimizing-the-basic-rasterizer/
      */
-    _rasterizeTri(A, B, C, mesh) {
+    _rasterizeFace(A, B, C) {
         const v0 = A.pixel;
         const v1 = B.pixel;
         const v2 = C.pixel;
@@ -247,10 +236,10 @@ class ThreeDRenderer {
         const nDotLB = this._computeNDotL(B.world, B.normal, this.lightPos);
         const nDotLC = this._computeNDotL(C.world, C.normal, this.lightPos);
         //
-        const uvA = mesh.texture._mapUVToTexture(A.uv);
-        const uvB = mesh.texture._mapUVToTexture(B.uv);
-        const uvC = mesh.texture._mapUVToTexture(C.uv);
-        //console.log(`UV A: ${uvA}, UV B: ${uvB}, UV C: ${uvC}`);
+        const uvA = A.uv;
+        const uvB = B.uv;
+        const uvC = C.uv;
+        //
         const colorA = new Color(uvA.r * nDotLA, uvA.g * nDotLA, uvA.b * nDotLA);
         const colorB = new Color(uvB.r * nDotLB, uvB.g * nDotLB, uvB.b * nDotLB);
         const colorC = new Color(uvC.r * nDotLC, uvC.g * nDotLC, uvC.b * nDotLC);

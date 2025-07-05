@@ -12,10 +12,20 @@
             canvas {
                 display: block;
             }
+            #container {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: black;
+            }
         </style>
     </head>
     <body>
-        <canvas id="canvas" width="1280" height="800"></canvas>
+        <div id="container">
+            <canvas id="canvas" width="1280" height="800"></canvas>
+        </div>
         <script type="module">
             import { Camera } from './js/modules/renderer/3d/Camera.js';
             import { Color } from './js/modules/utils/Color.js';
