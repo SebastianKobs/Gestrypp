@@ -118,6 +118,9 @@ class WavefrontObjParser {
                         //
                         if (normalIndices.length) {
                             face.addNormals(normals[normalIndices[0]], normals[normalIndices[i]], normals[normalIndices[i + 1]]);
+                        } else {
+                            console.warn(`No normals found for face on line: ${line}`);
+                            face.calculateNormals();
                         }
                         //
                         if (uvCoordinateIndices.length) {

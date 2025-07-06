@@ -102,7 +102,7 @@ class Matrix4 {
      * _forward is z axis, _right is x axis, _up is y axis
      */
     static LookAt(eye, target, up) {
-        const _forward = Vector3.Subtract(eye, target).normalize(); //forward
+        const _forward = Vector3.Subtract(target, eye).normalize(); //forward
         const _right = Vector3.Cross(up, _forward).normalize(); //side
         const _up = Vector3.Cross(_forward, _right); //up
         //
@@ -113,10 +113,10 @@ class Matrix4 {
         const m = new Matrix4();
         // prettier-ignore
         m.set(
-            _right.x, _up.x, _forward.x, 0,
-            _right.y, _up.y, _forward.y, 0,
-            _right.z, _up.z, _forward.z, 0,
-            -translationX, -translationY, -translationZ, 1
+            _right.x, _up.x, -_forward.x, 0,
+            _right.y, _up.y, -_forward.y, 0,
+            _right.z, _up.z, -_forward.z, 0,
+            translationX, translationY, translationZ, 1
         );
         //
         return m;

@@ -6,6 +6,7 @@ import { Color } from '../../utils/Color.js';
 
 class Face {
     constructor(v1, v2, v3) {
+        //
         this.v1 = v1.clone();
         this.v2 = v2.clone();
         this.v3 = v3.clone();
@@ -66,6 +67,10 @@ class Face {
     }
     //
     addUVColors(texture) {
+        if (this.uv1 === null || this.uv2 === null || this.uv3 === null) {
+            console.warn('UVs are not set, cannot map UV colors.');
+            return this;
+        }
         this.uv1Color = texture._mapUVToTexture(this.uv1);
         this.uv2Color = texture._mapUVToTexture(this.uv2);
         this.uv3Color = texture._mapUVToTexture(this.uv3);
@@ -79,5 +84,28 @@ class Face {
     //
     getNormals() {
         return [this.n1, this.n2, this.n3];
+    }
+    //
+    calculateNormals() {
+        if (this.n1 && this.n2 && this.n3) {
+            return this;
+        }
+        //
+        const v1 = this.v1;
+        const v2 = this.v2;
+        const v3 = this.v3;
+        //
+        const edge1 = v2.subtractVector3(v1);
+        const edge2 = v3.subtractVector3(v1);
+        //
+        const normal = edge1.cross(edge2).normalize();
+
+        console.log('Calculated normal:', normal);
+        //
+        this.n1 = normal.clone();
+        this.n2 = normal.clone();
+        this.n3 = normal.clone();
+        //
+        return this;
     }
 }

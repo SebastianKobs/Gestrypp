@@ -17,10 +17,12 @@ class ThreeDRenderer {
     accumulatedTime = 0;
     fps = 0;
     steps = 0;
-    lightPos = new Vector3(20, 40, -20);
+    lightPos = new Vector3(20, -20, -40); // Light position in world coordinates
     debug = false;
+    showWireframe = false;
+    shaded = true;
     //
-    constructor(canvas, debug = false) {
+    constructor(canvas) {
         const offscreen = canvas.transferControlToOffscreen();
         this.ctx = offscreen.getContext('2d');
         this.width = canvas.width;
@@ -30,7 +32,6 @@ class ThreeDRenderer {
         this.depthBuffer = new Float32Array(this.width * this.height);
         this.backbuffer = this.ctx.getImageData(0, 0, this.width, this.height);
         this.backbufferData = this.backbuffer.data;
-        this.debug = debug;
     }
     //
     clear() {
@@ -92,17 +93,21 @@ class ThreeDRenderer {
                 const pixelB = this._convertToScreenCoordinates(face.v2.transformCoordinate(mvpMatrix));
                 const pixelC = this._convertToScreenCoordinates(face.v3.transformCoordinate(mvpMatrix));
                 //
+                const area = this._edgeFunction(pixelC, pixelB, pixelA);
+                //
+                if (area < 0) {
+                    continue;
+                }
                 this.ctx.fillText('A', pixelA.x, pixelA.y);
                 this.ctx.fillText('B', pixelB.x, pixelB.y);
                 this.ctx.fillText('C', pixelC.x, pixelC.y);
                 //
-
                 const cp = face.v1.addVector3(face.v2).addVector3(face.v3).divideScalar(3);
                 const cpp = this._convertToScreenCoordinates(cp.transformCoordinate(mvpMatrix));
                 this.ctx.fillText('cp', cpp.x, cpp.y);
                 //
                 const cn = face.n1.addVector3(face.n2).addVector3(face.n3).divideScalar(3).normalize();
-                const cnw = cp.addVector3(cn.multiplyScalar(0.1));
+                const cnw = cp.addVector3(cn.multiplyScalar(0.4));
                 const np = this._convertToScreenCoordinates(cnw.transformCoordinate(mvpMatrix));
                 //
                 this.ctx.fillText('cn', np.x, np.y);
@@ -110,7 +115,7 @@ class ThreeDRenderer {
                 this.ctx.moveTo(cpp.x, cpp.y);
                 this.ctx.lineTo(np.x, np.y);
                 this.ctx.lineWidth = 2;
-                this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+                this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
                 this.ctx.stroke();
 
                 const lwp = this._convertToScreenCoordinates(this.lightPos.transformCoordinate(vpMatrix));
@@ -128,7 +133,6 @@ class ThreeDRenderer {
     //
     _drawMeshFaces(mesh, mvpMatrix, worldMatrix) {
         for (const face of mesh.faces) {
-            console.log('Drawing face', face);
             const pixelA = {
                 pixel: this._convertToScreenCoordinates(face.v1.transformCoordinate(mvpMatrix)),
                 normal: face.n1.transformCoordinate(worldMatrix),
@@ -151,7 +155,9 @@ class ThreeDRenderer {
             };
             //
             this._rasterizeFace(pixelA, pixelB, pixelC, mesh);
-            //this._wireframeFace(pixelA, pixelB, pixelC, new Color(255, 255, 255, 1));
+            if (this.showWireframe) {
+                this._wireframeFace(pixelA, pixelB, pixelC, new Color(255, 255, 255, 1));
+            }
         }
     }
     //
@@ -237,6 +243,11 @@ class ThreeDRenderer {
         const pB = B.pixel;
         const pC = C.pixel;
         //
+        const area = this._edgeFunction(pC, pB, pA);
+        //
+        if (area < 0) {
+            return;
+        }
         this._drawBrezenhamLine(pA, pB, color);
         this._drawBrezenhamLine(pB, pC, color);
         this._drawBrezenhamLine(pC, pA, color);
@@ -249,11 +260,8 @@ class ThreeDRenderer {
         const v1 = B.pixel;
         const v2 = C.pixel;
         //
-        if ((A.normal.z | B.normal.z | C.normal.z) < 0) {
-            return;
-        }
         //
-        const area = this._edgeFunction(v0, v1, v2);
+        const area = this._edgeFunction(v2, v1, v0);
         //
         if (area < 0) {
             return;
@@ -266,21 +274,21 @@ class ThreeDRenderer {
         //
         const p = new Vector3(minX, minY, 0);
         //
-        let w0_row = this._edgeFunction(v1, v2, p);
-        let w1_row = this._edgeFunction(v2, v0, p);
-        let w2_row = this._edgeFunction(v0, v1, p);
+        let w0_row = this._edgeFunction(v1, v0, p);
+        let w1_row = this._edgeFunction(v0, v2, p);
+        let w2_row = this._edgeFunction(v2, v1, p);
         //
-        const A01 = v0.y - v1.y;
-        const A12 = v1.y - v2.y;
-        const A20 = v2.y - v0.y;
+        const A01 = v2.y - v1.y;
+        const A12 = v1.y - v0.y;
+        const A20 = v0.y - v2.y;
         //
-        const B01 = v1.x - v0.x;
-        const B12 = v2.x - v1.x;
-        const B20 = v0.x - v2.x;
+        const B01 = v1.x - v2.x;
+        const B12 = v0.x - v1.x;
+        const B20 = v2.x - v0.x;
         //
-        const nDotLA = this._computeNDotL(A.world, A.normal, this.lightPos);
-        const nDotLB = this._computeNDotL(B.world, B.normal, this.lightPos);
-        const nDotLC = this._computeNDotL(C.world, C.normal, this.lightPos);
+        const nDotLA = this.shaded ? this._computeNDotL(A.world, A.normal, this.lightPos) : 1;
+        const nDotLB = this.shaded ? this._computeNDotL(B.world, B.normal, this.lightPos) : 1;
+        const nDotLC = this.shaded ? this._computeNDotL(C.world, C.normal, this.lightPos) : 1;
         //
         const uvA = A.uv;
         const uvB = B.uv;
@@ -298,9 +306,9 @@ class ThreeDRenderer {
                 //
                 if ((w0 | w1 | w2) >= 0) {
                     //
-                    const weightA = w0 / area;
+                    const weightA = w2 / area;
                     const weightB = w1 / area;
-                    const weightC = w2 / area;
+                    const weightC = w0 / area;
                     //
                     const r = weightA * colorA.r + weightB * colorB.r + weightC * colorC.r;
                     const g = weightA * colorA.g + weightB * colorB.g + weightC * colorC.g;
