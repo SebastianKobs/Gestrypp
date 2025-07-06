@@ -46,7 +46,7 @@
             //
             const meshes = [];
             //
-            const response = await fetch('/Gestrypp/testGeometry/homer.obj');
+            const response = await fetch('/Gestrypp/testGeometry/tri.obj');
 
             const obj = await response.text();
             //
@@ -59,7 +59,7 @@
             homer.rotation.z = (180 * Math.PI) / 180; // Rotate around X-axis
 
             //
-            homer.addTextureFromSrc('/Gestrypp/testGeometry/texture_homer.jpg');
+            //homer.addTextureFromSrc('/Gestrypp/testGeometry/texture_homer.jpg');
             meshes.push(homer);
             //
             const renderer = new ThreeDRenderer(canvas);

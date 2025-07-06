@@ -18,8 +18,9 @@ class ThreeDRenderer {
     fps = 0;
     steps = 0;
     lightPos = new Vector3(20, 40, -20);
+    debug = false;
     //
-    constructor(canvas) {
+    constructor(canvas, debug = false) {
         const offscreen = canvas.transferControlToOffscreen();
         this.ctx = offscreen.getContext('2d');
         this.width = canvas.width;
@@ -29,6 +30,7 @@ class ThreeDRenderer {
         this.depthBuffer = new Float32Array(this.width * this.height);
         this.backbuffer = this.ctx.getImageData(0, 0, this.width, this.height);
         this.backbufferData = this.backbuffer.data;
+        this.debug = debug;
     }
     //
     clear() {
@@ -69,9 +71,52 @@ class ThreeDRenderer {
             this.steps = 0;
         }
         //
+        if (this.debug) {
+            this._debugMeshes(meshes, vpMatrix);
+        }
         this.ctx.fillStyle = 'white';
         this.ctx.font = '16px Arial';
         this.ctx.fillText(`FPS: ${this.fps}`, 10, 20);
+    }
+    _debugMeshes(meshes, vpMatrix) {
+        this.ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+        this.ctx.font = '16px Arial';
+        //
+
+        for (const mesh of meshes) {
+            const worldMatrix = mesh.getWorldMatrix();
+            const mvpMatrix = worldMatrix.multiply(vpMatrix);
+            this.ctx.fillText(`Mesh: ${mesh.position}`, this.width - 400, 40);
+            for (const face of mesh.faces) {
+                const pixelA = this._convertToScreenCoordinates(face.v1.transformCoordinate(mvpMatrix));
+                const pixelB = this._convertToScreenCoordinates(face.v2.transformCoordinate(mvpMatrix));
+                const pixelC = this._convertToScreenCoordinates(face.v3.transformCoordinate(mvpMatrix));
+                //
+                this.ctx.fillText('A', pixelA.x, pixelA.y);
+                this.ctx.fillText('B', pixelB.x, pixelB.y);
+                this.ctx.fillText('C', pixelC.x, pixelC.y);
+                //
+
+                const cp = face.v1.addVector3(face.v2).addVector3(face.v3).divideScalar(3);
+                const cpp = this._convertToScreenCoordinates(cp.transformCoordinate(mvpMatrix));
+                this.ctx.fillText('cp', cpp.x, cpp.y);
+                //
+                const cn = face.n1.addVector3(face.n2).addVector3(face.n3).divideScalar(3).normalize();
+                const cnw = cp.addVector3(cn.multiplyScalar(0.1));
+                const np = this._convertToScreenCoordinates(cnw.transformCoordinate(mvpMatrix));
+                //
+                this.ctx.fillText('cn', np.x, np.y);
+                this.ctx.beginPath();
+                this.ctx.moveTo(cpp.x, cpp.y);
+                this.ctx.lineTo(np.x, np.y);
+                this.ctx.lineWidth = 2;
+                this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+                this.ctx.stroke();
+
+                const lwp = this._convertToScreenCoordinates(this.lightPos.transformCoordinate(vpMatrix));
+                this.ctx.fillText('L', lwp.x, lwp.y);
+            }
+        }
     }
     //
     _drawMeshVertices(mesh, mvpMatrix) {
@@ -83,6 +128,7 @@ class ThreeDRenderer {
     //
     _drawMeshFaces(mesh, mvpMatrix, worldMatrix) {
         for (const face of mesh.faces) {
+            console.log('Drawing face', face);
             const pixelA = {
                 pixel: this._convertToScreenCoordinates(face.v1.transformCoordinate(mvpMatrix)),
                 normal: face.n1.transformCoordinate(worldMatrix),
