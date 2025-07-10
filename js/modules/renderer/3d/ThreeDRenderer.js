@@ -78,6 +78,7 @@ class ThreeDRenderer {
         this.ctx.fillStyle = 'white';
         this.ctx.font = '16px Arial';
         this.ctx.fillText(`FPS: ${this.fps}`, 10, 20);
+        this.ctx.fillText('Arrow keys to rotate', 10, 45);
     }
     _debugMeshes(meshes, vpMatrix) {
         this.ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
