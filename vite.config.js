@@ -11,7 +11,8 @@ export default defineConfig({
         rollupOptions: {
             input: {
                 main: resolve(__dirname, 'index.html'),
-                nested: resolve(__dirname, '3dtest.html'),
+                threed: resolve(__dirname, 'js/modules/renderer/3d/public/index.html'),
+                pathfinding: resolve(__dirname, 'js/modules/pathfinding/public/index.html'),
             },
         },
     },
