@@ -45,14 +45,6 @@ document.addEventListener('keydown', (event) => {
         homer.rotation.y -= 0.1;
     } else if (event.key === 'ArrowRight') {
         homer.rotation.y += 0.1;
-    } else if (event.key === 'w') {
-        camera.position.z += 1;
-    } else if (event.key === 's') {
-        camera.position.z -= 1;
-    } else if (event.key === 'a') {
-        camera.position.x -= 0.1;
-    } else if (event.key === 'd') {
-        camera.position.x += 0.1;
     }
 });
 requestAnimationFrame(update);

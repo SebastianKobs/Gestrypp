@@ -2,6 +2,7 @@ body {
     margin: 0;
     overflow: hidden;
     background-color: #efefef;
+    font-family: 'sans-serif', Arial, Helvetica, sans-serif;
 }
 
 canvas {
@@ -21,6 +22,12 @@ canvas {
     align-items: center;
 }
 
+#info {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 14px;
+    color: #333;
+}
 button {
     display: inline;
     margin-left: 4px;
