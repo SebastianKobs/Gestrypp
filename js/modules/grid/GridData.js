@@ -2,12 +2,12 @@
 
 export { GridData };
 
-import { Node } from './Node.js';
-
 class GridData {
-    constructor(xElements, yElements) {
+    constructor(xElements, yElements, nodeConstructorFunction) {
         this.xElements = xElements;
         this.yElements = yElements;
+        //
+        this.nodeConstructorFunction = nodeConstructorFunction;
         //
         this.startNode = null;
         this.endNode = null;
@@ -71,7 +71,7 @@ class GridData {
             //
             const neighborIndex = newY * this.xElements + newX;
             //
-            if (!this.nodes[neighborIndex].walkable) {
+            if (this.nodes[neighborIndex].occupied) {
                 continue;
             }
             //
@@ -84,16 +84,32 @@ class GridData {
     getNodeAt(x, y) {
         const index = y * this.xElements + x;
         //
-        return this.nodes[index];
+        return this.nodes[index] || null;
     }
     //
+    getOccupiedNodes() {
+        return this.nodes.filter((node) => node.occupied);
+    }
     reset() {
         this.nodes = [];
         //
         for (let y = 0; y < this.yElements; y++) {
             for (let x = 0; x < this.xElements; x++) {
-                this.nodes[y * this.xElements + x] = new Node(x, y, true, 1);
+                this.nodes[y * this.xElements + x] = this.nodeConstructorFunction(x, y);
             }
         }
+    }
+    /**
+     * Unclear: resets A* specific state of the grid.
+     */
+    resetState() {
+        for (const node of this.nodes) {
+            node.g = 0;
+            node.h = 0;
+            node.parent = null;
+        }
+        //
+        this.startNode = null;
+        this.endNode = null;
     }
 }

@@ -1,9 +1,10 @@
 import { expect, test } from 'vitest';
-import { GridData } from '../../modules/pathfinding/GridData.js';
-import { AStar } from '../../modules/pathfinding/AStar.js';
+import { GridData } from '../../../modules/grid/GridData.js';
+import { AStar } from '../../../modules/pathfinding/a-star/AStar.js';
+import { AStarNode } from '../../../modules/pathfinding/a-star/AStarNode.js';
 
 test('AStar findPath', () => {
-    const grid = new GridData(3, 3);
+    const grid = new GridData(3, 3, AStarNode.Construct);
     //
     const startNode = grid.getNodeAt(0, 0);
     const endNode = grid.getNodeAt(2, 2);
@@ -25,11 +26,11 @@ test('AStar findPath', () => {
  *  w w e
  */
 test('AStar findPath with no path', () => {
-    const grid = new GridData(3, 3);
+    const grid = new GridData(3, 3, AStarNode.Construct);
     //
-    grid.getNodeAt(0, 1).walkable = false;
-    grid.getNodeAt(1, 0).walkable = false;
-    grid.getNodeAt(1, 1).walkable = false;
+    grid.getNodeAt(0, 1).occupied = true;
+    grid.getNodeAt(1, 0).occupied = true;
+    grid.getNodeAt(1, 1).occupied = true;
     //
     const startNode = grid.getNodeAt(0, 0);
     const endNode = grid.getNodeAt(1, 1);
@@ -50,12 +51,12 @@ test('AStar findPath with no path', () => {
  * w w w w e
  */
 test('AStar findPath with non trivial path', () => {
-    const grid = new GridData(5, 5);
+    const grid = new GridData(5, 5, AStarNode.Construct);
     //
-    grid.getNodeAt(1, 0).walkable = false;
-    grid.getNodeAt(1, 1).walkable = false;
-    grid.getNodeAt(1, 2).walkable = false;
-    grid.getNodeAt(1, 3).walkable = false;
+    grid.getNodeAt(1, 0).occupied = true;
+    grid.getNodeAt(1, 1).occupied = true;
+    grid.getNodeAt(1, 2).occupied = true;
+    grid.getNodeAt(1, 3).occupied = true;
     //
     const startNode = grid.getNodeAt(0, 0);
     const endNode = grid.getNodeAt(4, 4);
@@ -94,3 +95,10 @@ test('AStar findPath with non trivial path', () => {
     expect(path[5].x).toBe(3);
     expect(path[5].y).toBe(4);
 });
+
+test('Node f value getter', () => {
+    const node = new AStarNode(0, 0, true, 5, 10);
+    //
+    expect(node.f).toBe(15);
+});
+//

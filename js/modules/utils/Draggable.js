@@ -7,8 +7,7 @@ class Draggable {
     //
     constructor(element) {
         this.targetElement = element;
-        element.addEventListener('mousedown', this.startDrag.bind(this));
-        element.addEventListener('touchstart', this.startDrag.bind(this));
+        element.addEventListener('pointerdown', this.startDrag.bind(this));
     }
     //
     startDrag(event) {
@@ -30,15 +29,11 @@ class Draggable {
         };
         //
         const upHandler = () => {
-            document.removeEventListener('mousemove', moveHandler);
-            document.removeEventListener('mouseup', upHandler);
-            document.removeEventListener('touchmove', moveHandler);
-            document.removeEventListener('touchend', upHandler);
+            document.removeEventListener('pointermove', moveHandler);
+            document.removeEventListener('pointerup', upHandler);
         };
         //
-        document.addEventListener('mousemove', moveHandler);
-        document.addEventListener('mouseup', upHandler);
-        document.addEventListener('touchmove', moveHandler);
-        document.addEventListener('touchend', upHandler);
+        document.addEventListener('pointermove', moveHandler);
+        document.addEventListener('pointerup', upHandler);
     }
 }

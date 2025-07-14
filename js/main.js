@@ -1,7 +1,7 @@
 'use strict';
 
 import { Draggable } from './modules/utils/Draggable.js';
-import { Helper } from './modules/utils/Helper.js';
+import { SaveCanvas, Clamp, EnsureNumberFormat, HexToColor } from './modules/utils/Helper.js';
 import { LSystem } from './modules/lindenmayer/LSystem.js';
 import { LineRenderer } from './modules/renderer/LineRenderer.js';
 //
@@ -20,12 +20,12 @@ import { LineRenderer } from './modules/renderer/LineRenderer.js';
         //
         sl = new LSystem(renderer, axiom, rules, document.getElementById('iterations').value, 9, 12);
         //
-        document.getElementById('reset').addEventListener('click', () => {
+        document.getElementById('reset').addEventListener('pointerup', () => {
             sl.render();
         });
         //
-        document.getElementById('save').addEventListener('click', () => {
-            Helper.save(canvas);
+        document.getElementById('save').addEventListener('pointerup', () => {
+            SaveCanvas(canvas);
         });
         //
         const draggableControls = new Draggable(document.getElementById('controls')); //eslint-disable-line
@@ -38,28 +38,28 @@ import { LineRenderer } from './modules/renderer/LineRenderer.js';
                 //
                 switch (e.target.id) {
                     case 'iterations':
-                        sl.iterations = Helper.clamp(Helper.ensureNumberFormat(value, sl.iterations), min, max);
+                        sl.iterations = Clamp(EnsureNumberFormat(value, sl.iterations), min, max);
                         break;
                     case 'length':
-                        sl.length = Helper.clamp(Helper.ensureNumberFormat(value, sl.length), min, max);
+                        sl.length = Clamp(EnsureNumberFormat(value, sl.length), min, max);
                         break;
                     case 'angle':
-                        sl.angle = Helper.clamp(Helper.ensureNumberFormat(value, sl), min, max);
+                        sl.angle = Clamp(EnsureNumberFormat(value, sl), min, max);
                         break;
                     case 'petalProbability':
-                        renderer.petalPropability = Helper.clamp(Helper.ensureNumberFormat(value, renderer.petalPropability), min, max);
+                        renderer.petalPropability = Clamp(EnsureNumberFormat(value, renderer.petalPropability), min, max);
                         break;
                     case 'stemColor':
-                        renderer.strokeStyleStem = Helper.hexToColor(value, 0.5);
+                        renderer.strokeStyleStem = HexToColor(value, 0.5);
                         break;
                     case 'stemColor2':
-                        renderer.strokeStyleStem2 = Helper.hexToColor(value, 0.5);
+                        renderer.strokeStyleStem2 = HexToColor(value, 0.5);
                         break;
                     case 'branchColor':
-                        renderer.strokeStyleBranch = Helper.hexToColor(value, 0.1);
+                        renderer.strokeStyleBranch = HexToColor(value, 0.1);
                         break;
                     case 'petalColor':
-                        renderer.strokeStylePetal = Helper.hexToColor(value, 0.6);
+                        renderer.strokeStylePetal = HexToColor(value, 0.6);
                         break;
                 }
                 //
@@ -89,25 +89,25 @@ import { LineRenderer } from './modules/renderer/LineRenderer.js';
                 }
                 //
                 switch (e.key) {
-                    case 'g': 
+                    case 'g':
                         e.preventDefault();
                         sl.render();
                         break;
-                    case 'c': 
+                    case 'c':
                         e.preventDefault();
                         document.getElementById('toggle').click();
                         break;
-                    case 's': 
+                    case 's':
                         e.preventDefault();
-                        Helper.save(canvas);
+                        SaveCanvas(canvas);
                         break;
                     case '+':
-                         e.preventDefault();
+                        e.preventDefault();
                         renderer.scale += 0.1;
                         document.getElementById('scale').textContent = renderer.scale.toFixed(1);
                         sl.render();
                         break;
-                    case '-': 
+                    case '-':
                         e.preventDefault();
                         renderer.scale -= 0.1;
                         document.getElementById('scale').textContent = renderer.scale.toFixed(1);

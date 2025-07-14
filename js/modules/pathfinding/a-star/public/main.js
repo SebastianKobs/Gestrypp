@@ -1,7 +1,8 @@
 'use strict';
 
-import { Grid } from '../Grid.js';
-import { GridData } from '../GridData.js';
+import { GridData } from '../../../grid/GridData.js';
+import { AStarGrid } from './AStarGrid.js';
+import { AStarNode } from '../AStarNode.js';
 import { AStar } from '../AStar.js';
 //
 
@@ -13,14 +14,17 @@ window.addEventListener('load', () => {
     const xElements = Math.floor(canvas.width / cellSize);
     const yElements = Math.floor(canvas.height / cellSize);
     //
-    const gd = new GridData(xElements, yElements);
+
+    const gd = new GridData(xElements, yElements, AStarNode.Construct);
     //
-    const g = new Grid(gd, cellSize, canvas);
+    const g = new AStarGrid(gd, canvas, cellSize);
     //
     const aStar = new AStar(gd);
     //
-    document.getElementById('find').addEventListener('click', () => {
+    document.getElementById('find').addEventListener('pointerup', () => {
         try {
+            gd.resetState();
+            //
             aStar.setStartNode(gd.startCell);
             aStar.setEndNode(gd.endCell);
             //
@@ -36,7 +40,7 @@ window.addEventListener('load', () => {
         }
     });
     //
-    document.getElementById('reset').addEventListener('click', () => {
+    document.getElementById('reset').addEventListener('pointerup', () => {
         g.reset();
     });
 });

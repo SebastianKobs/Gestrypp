@@ -8,7 +8,7 @@ import { Face } from '../../../modules/renderer/3d/Face.js';
 
 test('WavefrontObjParser with Unity Cube obj', () => {
     const cubeObjFile = fs.readFileSync('js/tests/renderer/3d/geometry/cube.obj', 'utf8');
-    const mesh = WavefrontObjParser.parse(cubeObjFile);
+    const mesh = WavefrontObjParser.Parse(cubeObjFile);
     //
     const uc = unityCube();
     //
@@ -23,33 +23,33 @@ test('WavefrontObjParser format Warnings', () => {
     });
     //
     const missingVertexObj = 'v 1.0 1.0';
-    WavefrontObjParser.parse(missingVertexObj);
+    WavefrontObjParser.Parse(missingVertexObj);
     //
     expect(consoleMock).toHaveBeenLastCalledWith(`Invalid vertex on line: ${missingVertexObj}`);
     //
     const missingFaceObj = 'f 1/2/3 4/5/6';
-    WavefrontObjParser.parse(missingFaceObj);
+    WavefrontObjParser.Parse(missingFaceObj);
     //
     expect(consoleMock).toHaveBeenLastCalledWith(`Invalid face on line: ${missingFaceObj}`);
     //
     const misssingOrInvalidNormalObj = 'f 1/2/3 4/5/a 1/1/2';
-    WavefrontObjParser.parse(misssingOrInvalidNormalObj);
+    WavefrontObjParser.Parse(misssingOrInvalidNormalObj);
     //
     expect(consoleMock).toHaveBeenLastCalledWith(`Invalid normal on line: ${misssingOrInvalidNormalObj}`);
     const nonNumericVertex = 'v 1.0 1.0 a';
-    WavefrontObjParser.parse(nonNumericVertex);
+    WavefrontObjParser.Parse(nonNumericVertex);
     //
     expect(consoleMock).toHaveBeenLastCalledWith(`Invalid vertex on line: ${nonNumericVertex}`);
     //
     const nonNumericFaceIndexObj = 'f 1/2/3 4/5/6 a/1/2';
-    WavefrontObjParser.parse(nonNumericFaceIndexObj);
+    WavefrontObjParser.Parse(nonNumericFaceIndexObj);
     //
     expect(consoleMock).toHaveBeenLastCalledWith(`Invalid face on line: ${nonNumericFaceIndexObj}`);
 });
 
 test('wavefrontObjParser Quads and Polygons', () => {
     const quadTestFile = fs.readFileSync('js/tests/renderer/3d/geometry/quadtest.obj', 'utf8');
-    const mesh = WavefrontObjParser.parse(quadTestFile, false);
+    const mesh = WavefrontObjParser.Parse(quadTestFile, false);
     //
     const expectedVertices = [new Vector3(0, 1, 2), new Vector3(2, 3, 4), new Vector3(5, 6, 7), new Vector3(8, 9, 10)];
     const expectedNormals = [new Vector3(0, 1, 2), new Vector3(2, 3, 4), new Vector3(5, 6, 7), new Vector3(8, 9, 10)];

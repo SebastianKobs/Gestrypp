@@ -25,10 +25,12 @@ class ThreeDRenderer {
     constructor(canvas) {
         const offscreen = canvas.transferControlToOffscreen();
         this.ctx = offscreen.getContext('2d');
+        //
         this.width = canvas.width;
         this.height = canvas.height;
         this.halfWidth = this.width / 2.0;
         this.halfHeight = this.height / 2.0;
+        //
         this.depthBuffer = new Float32Array(this.width * this.height);
         this.backbuffer = this.ctx.getImageData(0, 0, this.width, this.height);
         this.backbufferData = this.backbuffer.data;
@@ -67,7 +69,7 @@ class ThreeDRenderer {
         this.steps++;
         //
         if (this.accumulatedTime >= 1000) {
-            this.fps = 1000 / Math.round(this.accumulatedTime / this.steps);
+            this.fps = this.steps;
             this.accumulatedTime = 0;
             this.steps = 0;
         }

@@ -1,0 +1,13 @@
+body,
+canvas,
+#info {
+    background-color: #0e0e0e;
+    color: #ababab;
+}
+button {
+    color: #ababab;
+}
+button:hover {
+    background-color: #ababab;
+    color: #0e0e0e;
+}

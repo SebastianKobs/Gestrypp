@@ -12,7 +12,9 @@ export default defineConfig({
             input: {
                 main: resolve(__dirname, 'index.html'),
                 threed: resolve(__dirname, 'js/modules/renderer/3d/public/index.html'),
-                pathfinding: resolve(__dirname, 'js/modules/pathfinding/public/index.html'),
+                pathfinding_a_star: resolve(__dirname, 'js/modules/pathfinding/a-star/public/index.html'),
+                pathfinding_mst: resolve(__dirname, 'js/modules/pathfinding/minimum-spanning-tree/public/index.html'),
+                pathfinding_mst_animated: resolve(__dirname, 'js/modules/pathfinding/minimum-spanning-tree/public/animated.html'),
             },
         },
     },

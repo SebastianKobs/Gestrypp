@@ -6,7 +6,6 @@ class PriorityValueObject {
     constructor(value, priority) {
         this.value = value;
         this.priority = priority || value;
-        this.index = -1;
     }
     //
     toString() {

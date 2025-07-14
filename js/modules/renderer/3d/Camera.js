@@ -12,6 +12,7 @@ class Camera {
         this.up = up;
         this.fov = fov * (Math.PI / 180);
         this.aspectRatio = aspectRatio;
+        //
         this.near = 0.1;
         this.far = 1000;
     }

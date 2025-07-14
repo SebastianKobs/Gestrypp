@@ -16,7 +16,6 @@ class LSystem {
     useRandomAngle = true;
     //
     constructor(renderer, axiom, rules, iterations, length, angle) {
-        this.turtle = new Turtle();
         this.renderer = renderer;
         this.axiom = axiom;
         this.rules = rules;
@@ -24,6 +23,7 @@ class LSystem {
         this.length = length;
         this.angle = angle;
         //
+        this.turtle = new Turtle();
         this.generateSentence();
     }
     //

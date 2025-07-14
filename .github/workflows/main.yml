@@ -46,9 +46,11 @@ jobs:
             - name: copy module public files
               run: |
                   # Copy 3D module public files
-                  cp -r ./dist/js/modules/renderer/3d/public/index.html dist/3d.html
+                  mkdir -p ./dist/3d-renderer && cp -r ./dist/js/modules/renderer/3d/public/index.html dist/3d-renderer/index.html
                   # Copy pathfinding module public files
-                  cp -r ./dist/js/modules/pathfinding/public/index.html dist/pathfinding.html
+                  mkdir -p ./dist/pathfinding/a-star && cp -r ./dist/js/modules/pathfinding/a-star/public/index.html dist/pathfinding/a-star/index.html
+                  mkdir -p ./dist/pathfinding/minimum-spanning-tree && cp -r ./dist/js/modules/pathfinding/minimum-spanning-tree/public/index.html dist/pathfinding/minimum-spanning-tree/index.html
+                  mkdir -p ./dist/pathfinding/animated-minimum-spanning-tree && cp -r ./dist/js/modules/pathfinding/minimum-spanning-tree/public/animated.html dist/pathfinding/animated-minimum-spanning-tree/index.html
             - name: Upload artifact
               uses: actions/upload-pages-artifact@v3
               with:

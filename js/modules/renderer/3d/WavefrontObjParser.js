@@ -6,7 +6,7 @@ import { Mesh } from './Mesh.js';
 import { Face } from './Face.js';
 import { Vector3 } from '../../math/Vector3.js';
 class WavefrontObjParser {
-    static parse(objString, unity = true) {
+    static Parse(objString, unity = true) {
         const lines = objString.split('\n');
         //
         const mesh = new Mesh();

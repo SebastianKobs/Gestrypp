@@ -20,13 +20,13 @@ window.addEventListener('load', async () => {
 
     const obj = await response.text();
     //
-    const homer = WavefrontObjParser.parse(obj);
+    const homer = WavefrontObjParser.Parse(obj);
     //
     homer.scale(2);
     homer.color = new Color(0, 167, 200, 1);
     //
     homer.position = new Vector3(0, 0, 0);
-    homer.rotation.z = (180 * Math.PI) / 180;
+    homer.rotation.z = 180 * (Math.PI / 180);
     //
     homer.addTextureFromSrc('/Gestrypp/testGeometry/texture_homer.jpg');
     meshes.push(homer);

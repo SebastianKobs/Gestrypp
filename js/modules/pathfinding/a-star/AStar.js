@@ -2,14 +2,14 @@
 
 export { AStar };
 
-import { PriorityQueue, PriorityValueObject } from '../collections/PriorityQueue.js';
+import { PriorityQueue, PriorityValueObject } from '../../collections/PriorityQueue.js';
 
 class AStar {
     constructor(gridData) {
+        this.gridData = gridData;
+        //
         this.openSet = new PriorityQueue();
         this.closedSet = new Set();
-        //
-        this.gridData = gridData;
     }
     //
     setStartNode(node) {
