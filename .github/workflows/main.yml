@@ -51,6 +51,7 @@ jobs:
                   mkdir -p ./dist/pathfinding/a-star && cp -r ./dist/js/modules/pathfinding/a-star/public/index.html dist/pathfinding/a-star/index.html
                   mkdir -p ./dist/pathfinding/minimum-spanning-tree && cp -r ./dist/js/modules/pathfinding/minimum-spanning-tree/public/index.html dist/pathfinding/minimum-spanning-tree/index.html
                   mkdir -p ./dist/pathfinding/animated-minimum-spanning-tree && cp -r ./dist/js/modules/pathfinding/minimum-spanning-tree/public/animated.html dist/pathfinding/animated-minimum-spanning-tree/index.html
+                  mkdir -p ./dist/particle-life && cp -r ./dist/js/modules/particle/public/index.html dist/particle-life/index.html
             - name: Upload artifact
               uses: actions/upload-pages-artifact@v3
               with:

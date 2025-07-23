@@ -15,3 +15,7 @@ Demo: [A\*](https://sebastiankobs.github.io/Gestrypp/pathfinding/a-star/)
 Demo: [Minimum Spanning Tree](https://sebastiankobs.github.io/Gestrypp/pathfinding/minimum-spanning-tree/)
 
 Demo: [Animated Spanning Tree](https://sebastiankobs.github.io/Gestrypp/pathfinding/animated-minimum-spanning-tree/)
+
+### Particles
+
+Demo: [Particle Life](https://sebastiankobs.github.io/Gestrypp/particle-life)

@@ -15,6 +15,7 @@ export default defineConfig({
                 pathfinding_a_star: resolve(__dirname, 'js/modules/pathfinding/a-star/public/index.html'),
                 pathfinding_mst: resolve(__dirname, 'js/modules/pathfinding/minimum-spanning-tree/public/index.html'),
                 pathfinding_mst_animated: resolve(__dirname, 'js/modules/pathfinding/minimum-spanning-tree/public/animated.html'),
+                particle_life: resolve(__dirname, 'js/modules/particle/public/index.html'),
             },
         },
     },
