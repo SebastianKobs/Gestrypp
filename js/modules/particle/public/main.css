@@ -21,11 +21,6 @@ canvas {
     height: 20px;
 }
 
-.break {
-    flex-basis: 100%;
-    height: 0;
-}
-
 #controls {
     left: calc(50vw - 250px);
     top: 50vh;
@@ -55,6 +50,7 @@ canvas {
 #matrix {
     margin-right: 20px;
 }
+
 #buttons {
     display: flex;
     justify-content: center;

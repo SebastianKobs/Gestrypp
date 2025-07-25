@@ -216,12 +216,14 @@ import { Color } from '../../utils/Color.js';
                 dataCell.className = 'cell';
                 //
                 const value = matrix[i][j];
+                //
                 dataCell.dataset.attractionValue = value;
                 dataCell.dataset.species = i;
                 dataCell.dataset.attractedSpecies = j;
                 //
                 dataCell.addEventListener('click', (event) => {
                     let newAttractionValue = parseFloat(event.target.dataset.attractionValue);
+                    //
                     if (event.shiftKey) {
                         newAttractionValue = 0;
                     } else if (event.ctrlKey) {
@@ -229,15 +231,17 @@ import { Color } from '../../utils/Color.js';
                     } else if (event.altKey) {
                         newAttractionValue = -1;
                     }
+                    //
                     const species = event.target.dataset.species;
                     const attractedSpecies = event.target.dataset.attractedSpecies;
+                    //
                     matrix[species][attractedSpecies] = newAttractionValue;
                     event.target.dataset.attractionValue = newAttractionValue;
+                    //
                     displayMatrix();
-
                     drawEquation(force, event.target.dataset.attractionValue);
                 });
-
+                //
                 const alpha = Math.abs(value);
                 //
                 REPULSION_COLOR.a = alpha;
