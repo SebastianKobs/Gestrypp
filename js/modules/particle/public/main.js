@@ -25,6 +25,8 @@ import { Color } from '../../utils/Color.js';
     const TAU = Math.PI * 2;
     //
     const BACKGROUND_COLOR = new Color(20, 20, 20).toString();
+    const EQUATION_BACKGROUND_COLOR = new Color(40, 40, 40).toString();
+    const EQUATION_AXIS_COLOR = new Color(200, 200, 200).toString();
     //
     const ATTRACTION_COLOR = new Color(20, 200, 50);
     const REPULSION_COLOR = new Color(200, 20, 50);
@@ -172,6 +174,7 @@ import { Color } from '../../utils/Color.js';
         matrix = makeAttractionMatrix();
         populateParticles();
         displayMatrix();
+        drawEquation(force);
     }
     //
     function displayMatrix() {
@@ -213,7 +216,28 @@ import { Color } from '../../utils/Color.js';
                 dataCell.className = 'cell';
                 //
                 const value = matrix[i][j];
+                dataCell.dataset.attractionValue = value;
+                dataCell.dataset.species = i;
+                dataCell.dataset.attractedSpecies = j;
                 //
+                dataCell.addEventListener('click', (event) => {
+                    let newAttractionValue = parseFloat(event.target.dataset.attractionValue);
+                    if (event.shiftKey) {
+                        newAttractionValue = 0;
+                    } else if (event.ctrlKey) {
+                        newAttractionValue = 1;
+                    } else if (event.altKey) {
+                        newAttractionValue = -1;
+                    }
+                    const species = event.target.dataset.species;
+                    const attractedSpecies = event.target.dataset.attractedSpecies;
+                    matrix[species][attractedSpecies] = newAttractionValue;
+                    event.target.dataset.attractionValue = newAttractionValue;
+                    displayMatrix();
+
+                    drawEquation(force, event.target.dataset.attractionValue);
+                });
+
                 const alpha = Math.abs(value);
                 //
                 REPULSION_COLOR.a = alpha;
@@ -226,6 +250,62 @@ import { Color } from '../../utils/Color.js';
             //
             matrixElement.appendChild(row);
         }
+    }
+
+    function drawEquation(func, attractionValue = 1) {
+        const equationCanvas = document.getElementById('equation');
+        //
+        const ctx = equationCanvas.getContext('2d');
+        const width = equationCanvas.width;
+        const height = equationCanvas.height;
+        //
+        ctx.fillStyle = EQUATION_BACKGROUND_COLOR;
+        ctx.fillRect(0, 0, width, height);
+        //
+        ctx.strokeStyle = EQUATION_AXIS_COLOR;
+        ctx.lineWidth = 1;
+        //
+        ctx.beginPath();
+        ctx.moveTo(0, height / 2);
+        ctx.lineTo(width, height / 2);
+        ctx.stroke();
+        //
+        ctx.beginPath();
+        ctx.moveTo(50, 0);
+        ctx.lineTo(50, height);
+        ctx.stroke();
+        //
+        ctx.lineWidth = 2;
+        //
+        const offsetX = 50;
+        const offsetY = height / 2;
+        //
+        const steps = width - offsetX;
+        //
+        REPULSION_COLOR.a = 1;
+        ATTRACTION_COLOR.a = 1;
+        //
+        for (let i = 0; i < steps; i++) {
+            const r = i / steps;
+            //
+            const f = func(r, attractionValue);
+            //
+            const x = offsetX + i;
+            const y = offsetY - f * offsetY;
+            //
+            ctx.strokeStyle = f < 0 ? REPULSION_COLOR.toString() : ATTRACTION_COLOR.toString();
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+            ctx.lineTo(x + 1, y);
+            ctx.stroke();
+        }
+        //
+        ctx.fillStyle = 'white';
+        ctx.font = '12px Arial';
+        ctx.fillText('r', width - 20, offsetY + 15);
+        ctx.fillText('f(r)', 55, 15);
+        ctx.fillText('1', width - 10, offsetY + 15);
+        ctx.fillText(`β=${BETA}`, offsetX + BETA * (width - 50) - 10, offsetY + 30);
     }
     //
     document.addEventListener('DOMContentLoaded', () => {
