@@ -47,6 +47,39 @@ canvas {
     margin-bottom: 10px;
 }
 
+#infoRow {
+    display: flex;
+    margin-top: 15px;
+    justify-content: center;
+    color: #b3aeae;
+    line-height: 1.5;
+}
+
+#matrix {
+    margin-right: 20px;
+}
+
+#buttons {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    justify-content: center;
+    z-index: 10;
+    cursor: pointer;
+}
+
+#description {
+    font-size: 14px;
+    max-width: 70%;
+    color: #fff9f9;
+    margin-top: 10px;
+}
+
+#controlRow {
+    display: flex;
+    margin-bottom: 10px;
+}
+
 #matrix {
     margin-right: 20px;
 }
@@ -85,4 +118,8 @@ button {
     min-width: 64px;
     border: 1px solid #b7b6b9;
     text-align: center;
+}
+
+.hidden {
+    display: none !important;
 }

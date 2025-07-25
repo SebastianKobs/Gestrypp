@@ -7,16 +7,20 @@ import { Color } from '../../utils/Color.js';
 (function () {
     let CANVAS, OFFSCREEN_CANVAS, CTX, C_WIDTH, C_HEIGHT;
     //
-    const NUM_PARTICLES = 1000;
+    let DEBUG = true;
+    //
+    const NUM_PARTICLES = 4000;
     const NUM_SPECIES = 6;
     const DT = 0.01;
     //
-    const FORCE_FACTOR = 10;
+    const FORCE_FACTOR = 2;
     //
     const MAX_DISTANCE = 0.1;
+
     const MAX_DISTANCE_SQUARED = MAX_DISTANCE * MAX_DISTANCE;
     const MAX_DISTANCE_FORCE_FACTOR = MAX_DISTANCE * FORCE_FACTOR;
     //
+    const GRID_SIZE = 1 / MAX_DISTANCE;
     const FRICTION_HALF_LIFE = 0.04;
     const FRICTION_FACTOR = Math.pow(0.5, DT / FRICTION_HALF_LIFE);
     //
@@ -31,16 +35,26 @@ import { Color } from '../../utils/Color.js';
     const ATTRACTION_COLOR = new Color(20, 200, 50);
     const REPULSION_COLOR = new Color(200, 20, 50);
     //
-    const particles = [];
+    const GRID_COLOR = new Color(255, 255, 255, 0.2).toString();
+    const DISTANCE_COLOR = new Color(200, 255, 255, 0.1).toString();
+    //
+    const PARTICE_DISPLAY_SIZE = 1;
+    //
+    let particles = [];
     //
     let matrix = makeAttractionMatrix();
     //
     let fpsLimiter = new FPSLimiter(60, loop);
     //
+
     class Particle {
         constructor(x, y, color, forceFunction) {
             this.x = x;
             this.y = y;
+            //
+            const gridPos = this._mapToGridCell(x, y);
+            this.gx = gridPos.gx;
+            this.gy = gridPos.gy;
             //
             this.velocityX = 0;
             this.velocityY = 0;
@@ -51,56 +65,97 @@ import { Color } from '../../utils/Color.js';
             this.forceFunction = forceFunction;
         }
         //
-        updateVelocity() {
+        updateVelocity(others) {
             let fX = 0;
             let fY = 0;
             //
-            for (let i = 0; i < NUM_PARTICLES; i++) {
-                const other = particles[i];
+            for (let i = 0; i < others.length; i++) {
+                const other = others[i];
                 //
                 if (this === other) {
                     continue;
                 }
                 //
-                const dx = other.x - this.x;
-                const dy = other.y - this.y;
+                let dx = other.x - this.x;
+                let dy = other.y - this.y;
+                //
+                if (dx > 0.5) {
+                    dx -= 1;
+                } else if (dx < -0.5) {
+                    dx += 1;
+                }
+                if (dy > 0.5) {
+                    dy -= 1;
+                } else if (dy < -0.5) {
+                    dy += 1;
+                }
                 //
                 const lenSquared = dx * dx + dy * dy;
                 //
-                if (lenSquared > MAX_DISTANCE_SQUARED) {
+                if (lenSquared > MAX_DISTANCE_SQUARED || lenSquared < 1e-9) {
                     continue;
                 }
-                const len = lenSquared ** 0.5;
+                //
+                const len = Math.sqrt(lenSquared);
                 //
                 const f = this.forceFunction(len / MAX_DISTANCE, matrix[this.color][other.color]);
                 //
-                fX += (dx / len) * f;
-                fY += (dy / len) * f;
+                const forceFactor = f / len;
+                //
+                fX += dx * forceFactor;
+                fY += dy * forceFactor;
             }
             //
             this.velocityX = this.velocityX * FRICTION_FACTOR + fX * MAX_DISTANCE_FORCE_FACTOR * DT;
             this.velocityY = this.velocityY * FRICTION_FACTOR + fY * MAX_DISTANCE_FORCE_FACTOR * DT;
+            //
         }
         //
         update() {
             this.updatePosition();
-            this.draw();
+            this._draw();
         }
         //
-        draw() {
-            const sx = (C_WIDTH + this.x * C_WIDTH) % C_WIDTH;
-            const sy = (C_HEIGHT + this.y * C_HEIGHT) % C_HEIGHT;
+        _draw() {
+            const sx = this.x * C_WIDTH;
+            const sy = this.y * C_HEIGHT;
             //
             CTX.beginPath();
-            CTX.arc(sx, sy, 2, 0, TAU);
+            CTX.arc(sx, sy, PARTICE_DISPLAY_SIZE, 0, TAU);
             CTX.fillStyle = this.fillStyle;
             CTX.fill();
             CTX.closePath();
+            //
+            if (DEBUG) {
+                CTX.strokeStyle = DISTANCE_COLOR;
+                CTX.lineWidth = 0.5;
+                CTX.beginPath();
+                CTX.arc(sx, sy, MAX_DISTANCE * C_WIDTH, 0, TAU);
+                CTX.stroke();
+            }
+        }
+        //
+        _mapToGridCell(x, y) {
+            let gx = Math.floor(x * GRID_SIZE);
+            let gy = Math.floor(y * GRID_SIZE);
+            //
+            gx = ((gx % GRID_SIZE) + GRID_SIZE) % GRID_SIZE;
+            gy = ((gy % GRID_SIZE) + GRID_SIZE) % GRID_SIZE;
+            //
+            return { gx, gy };
         }
         //
         updatePosition() {
             this.x += this.velocityX * DT;
             this.y += this.velocityY * DT;
+            //
+            this.x = ((this.x % 1) + 1) % 1;
+            this.y = ((this.y % 1) + 1) % 1;
+            //
+            const gridPos = this._mapToGridCell(this.x, this.y);
+            //
+            this.gx = gridPos.gx;
+            this.gy = gridPos.gy;
         }
     }
     //
@@ -128,14 +183,22 @@ import { Color } from '../../utils/Color.js';
             const x = Math.random();
             const y = Math.random();
             //
-            particles.push(new Particle(x, y, color, force));
+            const p = new Particle(x, y, color, force);
+            //
+            if (particles[p.gy] === undefined) {
+                particles[p.gy] = [];
+            }
+            if (particles[p.gy][p.gx] === undefined) {
+                particles[p.gy][p.gx] = [];
+            }
+            particles[p.gy][p.gx].push(p);
         }
     }
     //
     function force(r, a) {
-        if (r < BETA) {
+        if (r <= BETA) {
             return r / BETA - 1;
-        } else if (BETA < r && r < 1) {
+        } else if (BETA < r && r <= 1) {
             return a * (1 - Math.abs(2 * r - 1 - BETA) / (1 - BETA));
         } else {
             return 0;
@@ -143,19 +206,90 @@ import { Color } from '../../utils/Color.js';
     }
     //
     function updateVelocities() {
-        for (let i = 0; i < NUM_PARTICLES; i++) {
-            particles[i].updateVelocity();
+        for (let y = 0; y < GRID_SIZE; y++) {
+            for (let x = 0; x < GRID_SIZE; x++) {
+                updateVelocitiesForGridCell(x, y);
+            }
         }
     }
     //
     function loop() {
+        const startTime = performance.now();
         CTX.fillStyle = BACKGROUND_COLOR;
         CTX.fillRect(0, 0, C_WIDTH, C_HEIGHT);
         //
         updateVelocities();
         //
-        for (let i = 0; i < NUM_PARTICLES; i++) {
-            particles[i].update();
+        const newParticles = [];
+        //
+        for (let y = 0; y < GRID_SIZE; y++) {
+            if (particles[y] === undefined) {
+                continue;
+            }
+            for (let x = 0; x < GRID_SIZE; x++) {
+                if (particles[y][x] === undefined) {
+                    continue;
+                }
+                updateGridCell(x, y, newParticles);
+            }
+        }
+        //
+        particles = newParticles;
+        //
+        if (DEBUG) {
+            drawGrid();
+        }
+        const endTime = performance.now();
+        const fps = 1000 / (endTime - startTime);
+        CTX.fillStyle = 'white';
+        CTX.font = '12px Arial';
+        CTX.fillText(`FPS: ${Math.round(fps)}`, 10, 20);
+        CTX.fillText(`Particles: ${NUM_PARTICLES}`, 10, 40);
+        //
+        CTX.fillText(`Species: ${NUM_SPECIES}`, 10, 60);
+        CTX.fillText(`Beta: ${BETA}`, 10, 80);
+    }
+    //
+    function updateVelocitiesForGridCell(x, y) {
+        if (particles[y] === undefined || particles[y][x] === undefined) {
+            return;
+        }
+        //
+        let particlesToUpdate = [];
+        //
+        for (let dy = -1; dy <= 1; dy++) {
+            for (let dx = -1; dx <= 1; dx++) {
+                let nx = (((x + dx) % GRID_SIZE) + GRID_SIZE) % GRID_SIZE;
+                let ny = (((y + dy) % GRID_SIZE) + GRID_SIZE) % GRID_SIZE;
+                //
+                if (particles[ny] !== undefined && particles[ny][nx] !== undefined) {
+                    particlesToUpdate.push(...particles[ny][nx]);
+                }
+            }
+        }
+        //
+        const currentCellParticles = particles[y][x];
+        //
+        for (let i = 0; i < currentCellParticles.length; i++) {
+            currentCellParticles[i].updateVelocity(particlesToUpdate);
+        }
+    }
+    //
+    function updateGridCell(x, y, newParticles) {
+        const cellParticles = particles[y][x];
+        //
+        for (let i = 0; i < cellParticles.length; i++) {
+            const p = cellParticles[i];
+            //
+            p.update();
+            //
+            if (newParticles[p.gy] === undefined) {
+                newParticles[p.gy] = [];
+            }
+            if (newParticles[p.gy][p.gx] === undefined) {
+                newParticles[p.gy][p.gx] = [];
+            }
+            newParticles[p.gy][p.gx].push(p);
         }
     }
     //
@@ -166,6 +300,7 @@ import { Color } from '../../utils/Color.js';
         C_WIDTH = CANVAS.width;
         C_HEIGHT = CANVAS.height;
         //
+
         CTX.fillStyle = BACKGROUND_COLOR;
         CTX.fillRect(0, 0, C_WIDTH, C_HEIGHT);
     }
@@ -312,6 +447,24 @@ import { Color } from '../../utils/Color.js';
         ctx.fillText(`β=${BETA}`, offsetX + BETA * (width - 50) - 10, offsetY + 30);
     }
     //
+
+    //
+    function drawGrid() {
+        CTX.strokeStyle = GRID_COLOR;
+        CTX.lineWidth = 0.5;
+        //
+        const gw = C_WIDTH / GRID_SIZE;
+        const gh = C_HEIGHT / GRID_SIZE;
+        //
+        for (let y = 0; y < GRID_SIZE; y++) {
+            for (let x = 0; x < GRID_SIZE; x++) {
+                CTX.beginPath();
+                CTX.rect(x * gw, y * gh, gw, gh);
+                CTX.stroke();
+            }
+        }
+    }
+    //
     document.addEventListener('DOMContentLoaded', () => {
         CANVAS = document.getElementById('canvas');
         CANVAS.width = window.innerWidth;
@@ -339,4 +492,14 @@ import { Color } from '../../utils/Color.js';
     });
     //
     window.addEventListener('resize', resizeHandler);
+    //
+    window.addEventListener('keydown', (event) => {
+        if (event.key === 'D' && event.shiftKey) {
+            DEBUG = !DEBUG;
+        }
+        if (event.key === 'C' && event.shiftKey) {
+            document.getElementById('controls').classList.toggle('hidden');
+        }
+    });
+    //
 })();
