@@ -7,7 +7,9 @@ import { Color } from '../../utils/Color.js';
 (function () {
     let CANVAS, OFFSCREEN_CANVAS, CTX, C_WIDTH, C_HEIGHT;
     //
-    let DEBUG = true;
+    let DEBUG_GRID = false;
+    let DEBUG_RANGE = false;
+    let DEBUG_LOOP_COUNT = 0;
     //
     const NUM_PARTICLES = 4000;
     const NUM_SPECIES = 6;
@@ -126,7 +128,7 @@ import { Color } from '../../utils/Color.js';
             CTX.fill();
             CTX.closePath();
             //
-            if (DEBUG) {
+            if (DEBUG_RANGE) {
                 CTX.strokeStyle = DISTANCE_COLOR;
                 CTX.lineWidth = 0.5;
                 CTX.beginPath();
@@ -214,6 +216,7 @@ import { Color } from '../../utils/Color.js';
     }
     //
     function loop() {
+        DEBUG_LOOP_COUNT = 0;
         const startTime = performance.now();
         CTX.fillStyle = BACKGROUND_COLOR;
         CTX.fillRect(0, 0, C_WIDTH, C_HEIGHT);
@@ -236,7 +239,7 @@ import { Color } from '../../utils/Color.js';
         //
         particles = newParticles;
         //
-        if (DEBUG) {
+        if (DEBUG_GRID) {
             drawGrid();
         }
         const endTime = performance.now();
@@ -248,6 +251,9 @@ import { Color } from '../../utils/Color.js';
         //
         CTX.fillText(`Species: ${NUM_SPECIES}`, 10, 60);
         CTX.fillText(`Beta: ${BETA}`, 10, 80);
+        if (DEBUG_LOOP_COUNT > 0) {
+            CTX.fillText(`DCount: ${DEBUG_LOOP_COUNT}`, 10, 100);
+        }
     }
     //
     function updateVelocitiesForGridCell(x, y) {
@@ -461,6 +467,18 @@ import { Color } from '../../utils/Color.js';
                 CTX.beginPath();
                 CTX.rect(x * gw, y * gh, gw, gh);
                 CTX.stroke();
+
+                if (particles[y] === undefined) {
+                    continue;
+                }
+                if (particles[y][x] === undefined) {
+                    continue;
+                }
+                const count = particles[y][x].length;
+                CTX.fillStyle = 'white';
+                CTX.font = '12px Arial';
+                CTX.fillText(count, x * gw + 5, y * gh + 15);
+                DEBUG_LOOP_COUNT += count ** 2;
             }
         }
     }
@@ -494,8 +512,11 @@ import { Color } from '../../utils/Color.js';
     window.addEventListener('resize', resizeHandler);
     //
     window.addEventListener('keydown', (event) => {
-        if (event.key === 'D' && event.shiftKey) {
-            DEBUG = !DEBUG;
+        if (event.key === 'G' && event.shiftKey) {
+            DEBUG_GRID = !DEBUG_GRID;
+        }
+        if (event.key === 'R' && event.shiftKey) {
+            DEBUG_RANGE = !DEBUG_RANGE;
         }
         if (event.key === 'C' && event.shiftKey) {
             document.getElementById('controls').classList.toggle('hidden');
